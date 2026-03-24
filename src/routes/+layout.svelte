@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { nav } from '$lib/content';
 	import '../app.css';
@@ -148,10 +149,10 @@
 			</p>
 			{#each nav as item (item.slug)}
 				<a
-					href="/{item.slug}"
+					href="/{item.slug}.html"
 					class={[
 						'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-						page.url.pathname === `/${item.slug}`
+						page.url.pathname === resolve('/[slug].html', item)
 							? 'text-primary bg-primary-subtle font-medium'
 							: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
 					]}>{item.title}</a

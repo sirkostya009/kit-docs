@@ -21,7 +21,7 @@
 	</p>
 	<div class="flex flex-wrap gap-3">
 		<a
-			href="/getting-started"
+			href="/getting-started.html"
 			class="bg-primary inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-medium text-white no-underline transition-opacity hover:opacity-90"
 			>get started →</a
 		>
