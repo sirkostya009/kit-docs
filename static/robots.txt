@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /*.md$
+Sitemap: https://example.com/sitemap.xml

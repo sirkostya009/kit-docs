@@ -1,0 +1,49 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme inline {
+	--color-surface: var(--surface);
+	--color-surface-raised: var(--surface-raised);
+	--color-surface-overlay: var(--surface-overlay);
+	--color-border: var(--border);
+	--color-foreground: var(--foreground);
+	--color-foreground-muted: var(--foreground-muted);
+	--color-primary: var(--primary);
+	--color-primary-subtle: var(--primary-subtle);
+
+	--leading-base: 1.6;
+}
+
+:root {
+	--surface: #ffffff;
+	--surface-raised: #f6f6f7;
+	--surface-overlay: #ebebed;
+	--border: #e2e2e3;
+	--foreground: #1c1c1e;
+	--foreground-muted: #767680;
+	--primary: #5b73e8;
+	--primary-subtle: #eef0fd;
+}
+
+.dark {
+	--surface: #1b1b1f;
+	--surface-raised: #161618;
+	--surface-overlay: #202024;
+	--border: #2e2e32;
+	--foreground: #ededef;
+	--foreground-muted: #8e8e99;
+	--primary-subtle: #1e2240;
+}
+
+:target {
+	scroll-margin-top: calc(4rem + 1rem);
+}
+
+body {
+	background: var(--surface);
+	color: var(--foreground);
+	font-family: var(--font-sans);
+	line-height: var(--leading-base);
+}
