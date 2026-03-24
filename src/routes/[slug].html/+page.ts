@@ -1,10 +1,9 @@
 import { getPage, slugs } from '$lib/content';
 import { error } from '@sveltejs/kit';
-import type { EntryGenerator } from './$types';
 
 export const prerender = true;
 
-export const entries: EntryGenerator = () => slugs;
+export const entries = () => slugs;
 
 export async function load({ params }) {
 	const page = await getPage(params.slug);
