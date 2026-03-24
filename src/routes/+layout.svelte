@@ -47,7 +47,7 @@
 	>
 	<div class="flex-1"></div>
 	<a
-		href="https://github.com/example/kit-docs"
+		href="https://github.com/sirkostya009/kit-docs"
 		target="_blank"
 		rel="noopener noreferrer"
 		class="text-foreground-muted hover:text-foreground transition-colors"
