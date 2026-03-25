@@ -1,8 +1,9 @@
 import adapter from '@sveltejs/adapter-static';
 import { mdsvex } from 'mdsvex';
-import { createHighlighter } from 'shiki';
-import remarkFootnotes from 'remark-footnotes';
+import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeSlug from 'rehype-slug';
+import remarkFootnotes from 'remark-footnotes';
+import { createHighlighter } from 'shiki';
 
 const highlighter = await createHighlighter({
 	themes: ['github-light', 'github-dark'],
@@ -22,7 +23,10 @@ const config = {
 		mdsvex({
 			extensions: ['.svx', '.md'],
 			remarkPlugins: [remarkFootnotes],
-			rehypePlugins: [rehypeSlug],
+			rehypePlugins: [
+				rehypeSlug,
+				[rehypeAutolinkHeadings, { behavior: 'append', content: { type: 'text', value: ' #' } }]
+			],
 			highlight: {
 				highlighter: (code, lang) => {
 					const html = highlighter.codeToHtml(code, {

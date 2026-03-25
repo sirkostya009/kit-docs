@@ -11,7 +11,7 @@
 	<meta property="og:type" content="article" />
 </svelte:head>
 
-<div class="mx-auto flex max-w-5xl gap-12 min-w-0">
+<div class="mx-auto flex max-w-5xl min-w-0 gap-12">
 	<article class="prose max-w-[86ch] min-w-0 flex-1">
 		<data.component />
 	</article>
@@ -81,6 +81,22 @@
 		--tw-prose-pre-bg: #161618;
 		--tw-prose-th-borders: var(--border);
 		--tw-prose-td-borders: var(--border);
+	}
+
+	:global(.prose h1 a[href^='#']),
+	:global(.prose h2 a[href^='#']),
+	:global(.prose h3 a[href^='#']) {
+		color: var(--foreground-muted);
+		text-decoration: none;
+		opacity: 0;
+		transition: opacity 0.15s;
+		margin-left: 0.25em;
+	}
+
+	:global(.prose h1:hover a[href^='#']),
+	:global(.prose h2:hover a[href^='#']),
+	:global(.prose h3:hover a[href^='#']) {
+		opacity: 1;
 	}
 
 	:global(.prose h1) {
