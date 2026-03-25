@@ -3,11 +3,11 @@ import { slugs } from '$lib/content';
 
 export const prerender = true;
 
-function origin() {
-	if (env.ORIGIN) return env.ORIGIN;
-	if (env.VERCEL_PROJECT_PRODUCTION_URL) return `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`;
-	return 'http://localhost:5173';
-}
+const origin =
+	env.ORIGIN ??
+	env.PUBLIC_ORIGIN ??
+	(env.VERCEL_PROJECT_PRODUCTION_URL && `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`) ??
+	'http://localhost:5173';
 
 export function GET() {
 	const pages = [
@@ -20,7 +20,7 @@ export function GET() {
 ${pages
 	.map(
 		({ path, priority }) => `\t<url>
-\t\t<loc>${origin()}${path}</loc>
+\t\t<loc>${origin}${path}</loc>
 \t\t<priority>${priority}</priority>
 \t</url>`
 	)
