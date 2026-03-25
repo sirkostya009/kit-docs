@@ -14,6 +14,8 @@
 		browser ? ((localStorage.getItem('theme') as Theme) ?? 'system') : 'system'
 	);
 
+	let sidebarOpen = $state(false);
+
 	function applyTheme(t: Theme) {
 		const dark =
 			t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -32,6 +34,11 @@
 		}
 	});
 
+	$effect(() => {
+		void page.url;
+		sidebarOpen = false;
+	});
+
 	function cycleTheme() {
 		theme = themes[(themes.indexOf(theme) + 1) % themes.length];
 	}
@@ -41,7 +48,49 @@
 	<meta property="og:site_name" content="kit-docs" />
 </svelte:head>
 
-<nav class="bg-surface border-border sticky top-0 z-50 flex h-16 items-center gap-4 border-b px-6">
+<nav class="bg-surface border-border fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center gap-4 border-t px-6 md:sticky md:top-0 md:bottom-auto md:border-t-0 md:border-b">
+	<button
+		class="border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border bg-transparent transition-colors md:hidden"
+		onclick={() => (sidebarOpen = !sidebarOpen)}
+		aria-label="toggle sidebar"
+	>
+		{#if sidebarOpen}
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+			</svg>
+		{:else}
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line
+					x1="3"
+					y1="18"
+					x2="21"
+					y2="18"
+				/>
+			</svg>
+		{/if}
+	</button>
 	<a href="/" class="text-foreground text-[1.1rem] font-bold tracking-tight no-underline"
 		>kit<span class="text-primary">docs</span></a
 	>
@@ -139,7 +188,7 @@
 		{/if}
 	</button>
 </nav>
-<div class="min-h-[calc(100vh-4rem)]">
+<div class="min-h-[calc(100vh-4rem)] pb-16 md:pb-0">
 	<aside
 		class="border-border bg-surface-raised fixed top-16 h-[calc(100vh-4rem)] w-68 overflow-y-auto border-r py-6 max-md:hidden"
 	>
@@ -160,7 +209,37 @@
 			{/each}
 		</div>
 	</aside>
-	<main class="p-10 pl-68">
+	{#if sidebarOpen}
+		<div
+			class="fixed inset-0 bottom-16 z-40 bg-black/50 md:hidden"
+			onclick={() => (sidebarOpen = false)}
+			aria-hidden="true"
+		></div>
+		<aside
+			class="bg-surface-raised border-border fixed top-0 bottom-16 left-0 z-50 w-68 overflow-y-auto border-r py-6 md:hidden"
+		>
+			<div class="px-4 pb-4">
+				<p
+					class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase"
+				>
+					documentation
+				</p>
+				{#each nav as item (item.slug)}
+					<a
+						href="/{item.slug}.html"
+						onclick={() => (sidebarOpen = false)}
+						class={[
+							'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
+							page.url.pathname === resolve('/[slug].html', item)
+								? 'text-primary bg-primary-subtle font-medium'
+								: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
+						]}>{item.title}</a
+					>
+				{/each}
+			</div>
+		</aside>
+	{/if}
+	<main class="p-6 md:p-10 md:pl-78 max-md:pb-4">
 		{@render children()}
 	</main>
 </div>

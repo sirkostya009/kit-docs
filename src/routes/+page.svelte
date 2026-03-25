@@ -6,7 +6,7 @@
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<div class="mx-auto max-w-2xl px-12 pt-20 pb-16">
+<div class="mx-auto max-w-2xl px-6 pt-12 pb-10 md:px-12 md:pt-20 md:pb-16">
 	<span
 		class="text-primary bg-primary-subtle border-primary/25 mb-6 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold tracking-widest uppercase"
 		>sveltekit · markdown · static</span

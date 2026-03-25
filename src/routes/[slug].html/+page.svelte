@@ -11,7 +11,7 @@
 	<meta property="og:type" content="article" />
 </svelte:head>
 
-<div class="mx-auto flex max-w-5xl gap-12">
+<div class="mx-auto flex max-w-5xl gap-12 min-w-0">
 	<article class="prose max-w-[86ch] min-w-0 flex-1">
 		<data.component />
 	</article>
