@@ -3,7 +3,5 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit()],
-	build: { minify: 'oxc' },
-	server: { fs: { allow: ['docs'] } }
+	plugins: [tailwindcss(), sveltekit()]
 });
