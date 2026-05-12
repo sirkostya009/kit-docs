@@ -1,7 +1,7 @@
-import { nav } from '$lib/server/content';
+import { navTree } from '$lib/server/content';
 
 export const prerender = true;
 
 export function load() {
-	return { nav };
+	return { nav: navTree };
 }

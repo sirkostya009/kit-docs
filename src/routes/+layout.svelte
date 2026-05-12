@@ -198,16 +198,34 @@
 			<p class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase">
 				documentation
 			</p>
-			{#each nav as item (item.slug)}
+			{#each nav.top as item (item.slug)}
 				<a
 					href="/{item.slug}.html"
 					class={[
 						'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-						page.url.pathname === resolve('/[slug].html', item)
+						page.url.pathname === resolve('/[...slug].html', item)
 							? 'text-primary bg-primary-subtle font-medium'
 							: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
 					]}>{item.title}</a
 				>
+			{/each}
+			{#each nav.groups as group (group.name)}
+				<p
+					class="text-foreground-muted mt-4 mb-1 px-2 text-xs font-semibold tracking-widest uppercase"
+				>
+					{group.name}
+				</p>
+				{#each group.items as item (item.slug)}
+					<a
+						href="/{item.slug}.html"
+						class={[
+							'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
+							page.url.pathname === resolve('/[...slug].html', item)
+								? 'text-primary bg-primary-subtle font-medium'
+								: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
+						]}>{item.title}</a
+					>
+				{/each}
 			{/each}
 		</div>
 	</aside>
@@ -224,17 +242,36 @@
 				<p class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase">
 					documentation
 				</p>
-				{#each nav as item (item.slug)}
+				{#each nav.top as item (item.slug)}
 					<a
 						href="/{item.slug}.html"
 						onclick={() => (sidebarOpen = false)}
 						class={[
 							'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-							page.url.pathname === resolve('/[slug].html', item)
+							page.url.pathname === resolve('/[...slug].html', item)
 								? 'text-primary bg-primary-subtle font-medium'
 								: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
 						]}>{item.title}</a
 					>
+				{/each}
+				{#each nav.groups as group (group.name)}
+					<p
+						class="text-foreground-muted mt-4 mb-1 px-2 text-xs font-semibold tracking-widest uppercase"
+					>
+						{group.name}
+					</p>
+					{#each group.items as item (item.slug)}
+						<a
+							href="/{item.slug}.html"
+							onclick={() => (sidebarOpen = false)}
+							class={[
+								'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
+								page.url.pathname === resolve('/[...slug].html', item)
+									? 'text-primary bg-primary-subtle font-medium'
+									: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
+							]}>{item.title}</a
+						>
+					{/each}
 				{/each}
 			</div>
 		</aside>
