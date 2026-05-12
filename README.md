@@ -24,7 +24,7 @@ description: how to get up and running
 ...
 ```
 
-each file is prerendered to `/<slug>` (html) and `/<slug>.md` (raw source).
+each file is prerendered to `/<slug>.html` and `/<slug>.md` (for LLMs).
 
 ## dev
 

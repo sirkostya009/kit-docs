@@ -2,10 +2,10 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { nav } from '$lib/content';
 	import '../app.css';
 
-	let { children } = $props();
+	let { data, children } = $props();
+	const { nav } = $derived(data);
 
 	type Theme = 'light' | 'dark' | 'system';
 	const themes: Theme[] = ['light', 'dark', 'system'];
@@ -48,7 +48,9 @@
 	<meta property="og:site_name" content="kit-docs" />
 </svelte:head>
 
-<nav class="bg-surface border-border fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center gap-4 border-t px-6 md:sticky md:top-0 md:bottom-auto md:border-t-0 md:border-b">
+<nav
+	class="bg-surface border-border fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center gap-4 border-t px-6 md:sticky md:top-0 md:bottom-auto md:border-t-0 md:border-b"
+>
 	<button
 		class="border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border bg-transparent transition-colors md:hidden"
 		onclick={() => (sidebarOpen = !sidebarOpen)}
@@ -219,9 +221,7 @@
 			class="bg-surface-raised border-border fixed top-0 bottom-16 left-0 z-50 w-68 overflow-y-auto border-r py-6 md:hidden"
 		>
 			<div class="px-4 pb-4">
-				<p
-					class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase"
-				>
+				<p class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase">
 					documentation
 				</p>
 				{#each nav as item (item.slug)}
@@ -239,7 +239,7 @@
 			</div>
 		</aside>
 	{/if}
-	<main class="p-6 md:p-10 md:pl-78 max-md:pb-4">
+	<main class="p-6 max-md:pb-4 md:p-10 md:pl-78">
 		{@render children()}
 	</main>
 </div>

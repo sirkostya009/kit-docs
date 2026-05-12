@@ -13,7 +13,8 @@
 
 <div class="mx-auto flex max-w-5xl min-w-0 gap-12">
 	<article class="prose max-w-[86ch] min-w-0 flex-1">
-		<data.component />
+		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+		{@html data.html}
 	</article>
 
 	<aside class="w-52 shrink-0 max-lg:hidden">

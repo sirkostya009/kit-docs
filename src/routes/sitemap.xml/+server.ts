@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { slugs } from '$lib/content';
+import { slugs } from '$lib/server/content';
 
 export const prerender = true;
 

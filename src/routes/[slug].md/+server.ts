@@ -1,4 +1,4 @@
-import { getPage, slugs } from '$lib/content';
+import { getPage, slugs } from '$lib/server/content';
 import { error } from '@sveltejs/kit';
 
 export const prerender = true;

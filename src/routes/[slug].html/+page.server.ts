@@ -1,4 +1,4 @@
-import { getPage, slugs } from '$lib/content';
+import { getPage, slugs } from '$lib/server/content';
 import { error } from '@sveltejs/kit';
 
 export const prerender = true;
@@ -10,7 +10,7 @@ export async function load({ params }) {
 	if (!page) error(404);
 	return {
 		slug: params.slug,
-		component: page.component,
+		html: page.html,
 		metadata: page.metadata,
 		headings: page.headings
 	};
