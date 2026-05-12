@@ -1,6 +1,37 @@
 <script lang="ts">
+	import { SvelteSet } from 'svelte/reactivity';
+
 	const { data } = $props();
 	const title = $derived(data.metadata.title ? `${data.metadata.title} · kit-docs` : 'kit-docs');
+
+	let article = $state<HTMLElement>();
+	const active = new SvelteSet<string>();
+
+	$effect(() => {
+		void data.slug;
+		if (!article) return;
+		const headings = [...article.querySelectorAll<HTMLElement>('h2[id], h3[id]')];
+		if (headings.length === 0) return;
+
+		function compute() {
+			const vh = window.innerHeight;
+			const articleBottom = article!.getBoundingClientRect().bottom;
+			const visible: string[] = [];
+			for (let i = 0; i < headings.length; i++) {
+				const top = headings[i].getBoundingClientRect().top;
+				const bottom =
+					i + 1 < headings.length ? headings[i + 1].getBoundingClientRect().top : articleBottom;
+				if (bottom > 0 && top < vh) visible.push(headings[i].id);
+			}
+			for (const id of active) if (!visible.includes(id)) active.delete(id);
+			for (const id of visible) active.add(id);
+		}
+
+		const observer = new IntersectionObserver(compute, { rootMargin: '0px' });
+		for (const h of headings) observer.observe(h);
+		compute();
+		return () => observer.disconnect();
+	});
 </script>
 
 <svelte:head>
@@ -12,7 +43,7 @@
 </svelte:head>
 
 <div class="mx-auto flex max-w-5xl min-w-0 gap-12">
-	<article class="prose max-w-[86ch] min-w-0 flex-1">
+	<article bind:this={article} class="prose max-w-[86ch] min-w-0 flex-1">
 		<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 		{@html data.html}
 	</article>
@@ -45,15 +76,18 @@
 				<p class="text-foreground-muted mb-3 text-xs font-semibold tracking-widest uppercase">
 					on this page
 				</p>
-				<ul class="space-y-1">
+				<ul class="border-border border-l">
 					{#each data.headings as h (h.id)}
 						<li>
 							<a
 								href="#{h.id}"
 								data-sveltekit-noscroll
 								class={[
-									'text-foreground-muted hover:text-foreground block truncate text-sm no-underline transition-colors',
-									h.level === 3 ? 'pl-3' : ''
+									'-ml-px block truncate border-l-2 py-1 text-sm no-underline transition-colors',
+									active.has(h.id)
+										? 'border-primary bg-primary-subtle text-primary font-medium'
+										: 'text-foreground-muted hover:text-foreground border-transparent',
+									h.level === 3 ? 'pl-6' : 'pl-3'
 								]}>{h.text}</a
 							>
 						</li>
