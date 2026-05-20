@@ -7,8 +7,12 @@ const config = {
 		prerender: { handleMissingId: 'warn' }
 	},
 	vitePlugin: {
-		dynamicCompileOptions: ({ filename }) =>
-			filename.includes('node_modules') ? undefined : { runes: true }
+		inspector: {
+			toggleKeyCombo: 'meta-shift',
+			holdMode: true,
+			showToggleButton: 'active',
+			toggleButtonPos: 'bottom-right'
+		}
 	},
 	compilerOptions: { experimental: { async: true } }
 };
