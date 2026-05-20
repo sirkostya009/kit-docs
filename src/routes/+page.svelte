@@ -1,35 +1,209 @@
+<script lang="ts">
+	const cards = [
+		{
+			title: 'Getting started',
+			description: 'Spin up a docs site in under a minute.',
+			href: '/getting-started.html',
+			icon: 'rocket'
+		},
+		{
+			title: 'Configuration',
+			description: 'Adapters, build options, deployment.',
+			href: '/configuration.html',
+			icon: 'sliders'
+		},
+		{
+			title: 'Guides',
+			description: 'Install, customize, and theme your site.',
+			href: '/guides/installation.html',
+			icon: 'book'
+		},
+		{
+			title: 'Markdown showcase',
+			description: 'See what renders out of the box.',
+			href: '/markdown-showcase.html',
+			icon: 'sparkles'
+		}
+	];
+</script>
+
 <svelte:head>
-	<title>kit-docs</title>
+	<title>kit-docs · sveltekit docs starter</title>
 	<meta name="description" content="Build docs that ship as static files." />
 	<meta property="og:title" content="kit-docs" />
 	<meta property="og:description" content="Build docs that ship as static files." />
 	<meta property="og:type" content="website" />
 </svelte:head>
 
-<div class="mx-auto max-w-2xl px-6 pt-12 pb-10 md:px-12 md:pt-20 md:pb-16">
-	<span
-		class="text-primary bg-primary-subtle border-primary/25 mb-6 inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold tracking-widest uppercase"
-		>sveltekit · markdown · static</span
-	>
-	<h1 class="text-foreground mt-0 mb-4 text-5xl leading-tight font-extrabold tracking-tighter">
-		Build docs that<br />ship as static files
-	</h1>
-	<p class="text-foreground-muted mt-0 mb-8 max-w-[52ch] text-lg">
-		Write in markdown, get a fast prerendered site. Every page available as both HTML and raw <code
-			>.md</code
-		>.
-	</p>
-	<div class="flex flex-wrap gap-3">
-		<a
-			href="/getting-started.html"
-			class="bg-primary inline-flex items-center gap-1.5 rounded-lg px-5 py-2.5 text-sm font-medium text-white no-underline transition-opacity hover:opacity-90"
-			>get started →</a
+<article class="relative overflow-hidden px-4 py-8 md:px-12 md:py-12">
+	<div
+		class="from-primary-subtle pointer-events-none absolute inset-x-0 -top-32 -z-10 h-96 bg-linear-to-b to-transparent opacity-60"
+		aria-hidden="true"
+	></div>
+
+	<header class="max-w-3xl pt-10 pb-6 md:pt-14 md:pb-8">
+		<p
+			class="border-border-subtle bg-surface-raised text-foreground-muted mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium tracking-wide"
 		>
-		<a
-			href="/getting-started.md"
-			data-sveltekit-reload
-			class="bg-surface-overlay text-foreground border-border hover:bg-surface-raised inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 text-sm font-medium no-underline transition-colors"
-			>view source</a
+			<span aria-hidden="true" class="bg-primary inline-block size-1.5 rounded-full"></span>
+			sveltekit · markdown · static
+		</p>
+		<h1
+			class="text-foreground mt-0 mb-4 text-4xl leading-[1.1] font-bold tracking-tight md:text-5xl"
 		>
-	</div>
-</div>
+			Docs that ship as<br />
+			<span class="from-primary to-primary-400 bg-linear-to-r bg-clip-text text-transparent"
+				>static files</span
+			>
+		</h1>
+		<p class="text-foreground-muted mt-0 mb-6 max-w-[58ch] text-lg">
+			Write in markdown. Get a fast, prerendered site. Every page available as both HTML and raw
+			source.
+		</p>
+		<div class="flex flex-wrap gap-3">
+			<a
+				href="/getting-started.html"
+				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-sm transition-colors"
+			>
+				Get started
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M5 12h14" />
+					<path d="m12 5 7 7-7 7" />
+				</svg>
+			</a>
+			<a
+				href="https://github.com/sirkostya009/kit-docs"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 text-sm font-semibold no-underline transition-colors"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					aria-hidden="true"
+				>
+					<path
+						d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
+					/>
+				</svg>
+				GitHub
+			</a>
+		</div>
+	</header>
+
+	<nav aria-label="Documentation sections" class="max-w-3xl pb-12">
+		<ul class="grid list-none gap-3 p-0 sm:grid-cols-2">
+			{#each cards as card (card.href)}
+				<li>
+					<a
+						href={card.href}
+						class="group border-border bg-surface-raised hover:border-primary/40 relative flex h-full flex-col gap-1.5 rounded-lg border p-4 no-underline transition-all hover:shadow-sm"
+					>
+						<span
+							aria-hidden="true"
+							class="bg-primary-subtle text-primary mb-1 flex size-8 items-center justify-center rounded-lg"
+						>
+						{#if card.icon === 'rocket'}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+								><path
+									d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"
+								/><path
+									d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"
+								/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path
+									d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"
+								/></svg
+							>
+						{:else if card.icon === 'sliders'}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+								><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line
+									x1="12"
+									y1="21"
+									x2="12"
+									y2="12"
+								/><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line
+									x1="20"
+									y1="12"
+									x2="20"
+									y2="3"
+								/><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line
+									x1="17"
+									y1="16"
+									x2="23"
+									y2="16"
+								/></svg
+							>
+						{:else if card.icon === 'book'}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+								><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path
+									d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+								/></svg
+							>
+						{:else}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+								><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"
+								/><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></svg
+							>
+						{/if}
+						</span>
+						<span class="text-foreground text-sm font-semibold">{card.title}</span>
+						<span class="text-foreground-muted text-sm">{card.description}</span>
+					</a>
+				</li>
+			{/each}
+		</ul>
+	</nav>
+</article>

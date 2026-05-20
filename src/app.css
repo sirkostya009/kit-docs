@@ -3,47 +3,159 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+@theme {
+	--color-primary-50: #ebf5ff;
+	--color-primary-100: #e1effe;
+	--color-primary-200: #c3ddfd;
+	--color-primary-300: #a4cafe;
+	--color-primary-400: #76a9fa;
+	--color-primary-500: #3f83f8;
+	--color-primary-600: #1c64f2;
+	--color-primary-700: #1a56db;
+	--color-primary-800: #1e429f;
+	--color-primary-900: #233876;
+	--color-primary-950: #1f2f5b;
+
+	--color-gray-50: #f9fafb;
+	--color-gray-100: #f3f4f6;
+	--color-gray-200: #e5e7eb;
+	--color-gray-300: #d1d5db;
+	--color-gray-400: #9ca3af;
+	--color-gray-500: #6b7280;
+	--color-gray-600: #4b5563;
+	--color-gray-700: #374151;
+	--color-gray-800: #1f2a37;
+	--color-gray-900: #111928;
+	--color-gray-950: #0b0e14;
+}
+
 @theme inline {
 	--color-surface: var(--surface);
 	--color-surface-raised: var(--surface-raised);
 	--color-surface-overlay: var(--surface-overlay);
 	--color-border: var(--border);
+	--color-border-subtle: var(--border-subtle);
 	--color-foreground: var(--foreground);
 	--color-foreground-muted: var(--foreground-muted);
+	--color-foreground-subtle: var(--foreground-subtle);
 	--color-primary: var(--primary);
+	--color-primary-hover: var(--primary-hover);
 	--color-primary-subtle: var(--primary-subtle);
 
-	--leading-base: 1.6;
+	--leading-base: 1.65;
 }
 
 :root {
 	--surface: #ffffff;
-	--surface-raised: #f6f6f7;
-	--surface-overlay: #ebebed;
-	--border: #e2e2e3;
-	--foreground: #1c1c1e;
-	--foreground-muted: #767680;
-	--primary: #5b73e8;
-	--primary-subtle: #eef0fd;
+	--surface-raised: hsl(220, 14%, 97.5%);
+	--surface-overlay: hsl(220, 14%, 94%);
+	--border: hsla(220, 14%, 45%, 0.2);
+	--border-subtle: hsla(220, 14%, 45%, 0.12);
+	--foreground: hsl(220, 25%, 12%);
+	--foreground-muted: hsl(220, 12%, 40%);
+	--foreground-subtle: hsl(220, 12%, 55%);
+	--primary: var(--color-primary-600);
+	--primary-hover: var(--color-primary-700);
+	--primary-subtle: var(--color-primary-50);
+	--sidebar: hsl(220, 14%, 96%);
+	--layout-width: 90rem;
 }
 
 .dark {
-	--surface: #1b1b1f;
-	--surface-raised: #161618;
-	--surface-overlay: #202024;
-	--border: #2e2e32;
-	--foreground: #ededef;
-	--foreground-muted: #8e8e99;
-	--primary-subtle: #1e2240;
+	--surface: hsl(220, 18%, 7%);
+	--surface-raised: hsl(220, 16%, 10%);
+	--surface-overlay: hsl(220, 14%, 14%);
+	--border: hsla(220, 14%, 50%, 0.2);
+	--border-subtle: hsla(220, 14%, 50%, 0.12);
+	--foreground: hsl(220, 14%, 92%);
+	--foreground-muted: hsla(220, 12%, 70%, 0.85);
+	--foreground-subtle: hsla(220, 12%, 60%, 0.7);
+	--primary: var(--color-primary-400);
+	--primary-hover: var(--color-primary-300);
+	--primary-subtle: color-mix(in oklab, var(--color-primary-500) 14%, transparent);
+	--sidebar: hsl(220, 16%, 9%);
 }
 
 :target {
-	scroll-margin-top: calc(4rem + 1rem);
+	scroll-margin-top: calc(2rem);
+}
+
+html {
+	background: var(--surface);
 }
 
 body {
 	background: var(--surface);
 	color: var(--foreground);
-	font-family: var(--font-sans);
+	font-family:
+		'Inter',
+		ui-sans-serif,
+		system-ui,
+		-apple-system,
+		'Segoe UI',
+		sans-serif;
 	line-height: var(--leading-base);
+	-webkit-font-smoothing: antialiased;
+	font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+::selection {
+	background: color-mix(in oklab, var(--color-primary-500) 28%, transparent);
+	color: var(--foreground);
+}
+
+.dark ::selection {
+	background: color-mix(in oklab, var(--color-primary-400) 35%, transparent);
+	color: var(--foreground);
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+	accent-color: var(--primary);
+}
+
+@media (min-width: 768px) {
+	html {
+		--sidebar-w: 16rem;
+		--sidebar-shelf: calc(max(0px, (100vw - var(--layout-width)) / 2) + 16rem);
+	}
+
+	html.sidebar-collapsed {
+		--sidebar-w: 0px;
+		--sidebar-shelf: 0px;
+	}
+}
+
+dialog {
+	margin: 10vh auto auto;
+	transition:
+		opacity 70ms ease-out,
+		transform 70ms ease-out;
+}
+
+dialog[data-closing='true'] {
+	opacity: 0;
+	transform: translateY(-8px) scale(0.97);
+}
+
+@starting-style {
+	dialog[open]:not([data-closing='true']) {
+		opacity: 0;
+		transform: translateY(-8px) scale(0.97);
+	}
+}
+
+dialog::backdrop {
+	background-color: rgb(0 0 0 / 0.3);
+	transition: background-color 70ms ease-out;
+}
+
+dialog[data-closing='true']::backdrop {
+	background-color: rgb(0 0 0 / 0);
+}
+
+@starting-style {
+	dialog[open]:not([data-closing='true'])::backdrop {
+		background-color: rgb(0 0 0 / 0);
+	}
 }

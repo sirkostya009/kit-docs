@@ -2,6 +2,7 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import SearchModal from '$lib/SearchModal.svelte';
 	import '../app.css';
 
 	let { data, children } = $props();
@@ -15,6 +16,17 @@
 	);
 
 	let sidebarOpen = $state(false);
+	let searchOpen = $state(false);
+	const isMac = browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
+	const modKey = isMac ? '⌘' : 'Ctrl';
+	let sidebarCollapsed = $state(
+		browser ? localStorage.getItem('sidebar-collapsed') === 'true' : false
+	);
+
+	$effect(() => {
+		localStorage.setItem('sidebar-collapsed', String(sidebarCollapsed));
+		document.documentElement.classList.toggle('sidebar-collapsed', sidebarCollapsed);
+	});
 
 	function applyTheme(t: Theme) {
 		const dark =
@@ -42,241 +54,351 @@
 	function cycleTheme() {
 		theme = themes[(themes.indexOf(theme) + 1) % themes.length];
 	}
+
+	$effect(() => {
+		function onKey(e: KeyboardEvent) {
+			if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
+				e.preventDefault();
+				searchOpen = !searchOpen;
+			}
+		}
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	});
 </script>
+
+{#snippet navLink(item: { slug: string; title: string }, onclick?: () => void)}
+	{@const active = page.url.pathname === resolve('/[...slug].html', item)}
+	<a
+		href="/{item.slug}.html"
+		{onclick}
+		class={[
+			'block rounded-md px-3 py-1.5 text-sm no-underline transition-colors',
+			active
+				? 'text-primary bg-primary-subtle font-medium'
+				: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
+		]}
+	>
+		{item.title}
+	</a>
+{/snippet}
+
+{#snippet navTree(onclick?: () => void)}
+	{#each nav.top as item (item.slug)}
+		{@render navLink(item, onclick)}
+	{/each}
+	{#each nav.groups as group (group.name)}
+		<p
+			class="text-foreground-subtle mt-6 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
+		>
+			{group.name}
+		</p>
+		{#each group.items as item (item.slug)}
+			{@render navLink(item, onclick)}
+		{/each}
+	{/each}
+{/snippet}
+
+{#snippet logo()}
+	<a
+		href="/"
+		class="text-foreground inline-flex items-center gap-2 text-[0.95rem] font-semibold tracking-tight no-underline"
+	>
+		<span class="bg-primary inline-block size-5 rounded-md"></span>
+		kit<span class="text-foreground-muted font-normal">docs</span>
+	</a>
+{/snippet}
+
+{#snippet searchTrigger()}
+	<button
+		type="button"
+		onclick={() => (searchOpen = true)}
+		class="border-border bg-surface-raised text-foreground-subtle hover:bg-surface-overlay flex h-9 w-full cursor-text items-center gap-2 rounded-md border pr-2 pl-3 text-sm transition-colors"
+	>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="14"
+			height="14"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
+			aria-hidden="true"
+			><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg
+		>
+		<span class="flex-1 text-start">Search</span>
+		<kbd
+			class="border-border bg-surface text-foreground-subtle rounded border px-1.5 py-0.5 font-mono text-[0.65rem]"
+			>{modKey} K</kbd
+		>
+	</button>
+{/snippet}
+
+{#snippet chromeRow()}
+	<div
+		class="border-border bg-surface-raised text-foreground-muted flex items-center rounded-lg border p-0.5"
+	>
+		<a
+			href="https://github.com/sirkostya009/kit-docs"
+			target="_blank"
+			rel="noopener noreferrer"
+			class="hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+			aria-label="GitHub"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+				aria-hidden="true"
+			>
+				<path
+					d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
+				/>
+			</svg>
+		</a>
+		<div class="border-border ml-auto h-5 self-center border-l"></div>
+		<button
+			class="hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+			onclick={cycleTheme}
+			aria-label="toggle theme ({theme})"
+		>
+			{#if theme === 'system'}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<rect x="2" y="3" width="20" height="14" rx="2" />
+					<line x1="8" y1="21" x2="16" y2="21" />
+					<line x1="12" y1="17" x2="12" y2="21" />
+				</svg>
+			{:else if theme === 'dark'}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+				</svg>
+			{:else}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<circle cx="12" cy="12" r="5" />
+					<line x1="12" y1="1" x2="12" y2="3" />
+					<line x1="12" y1="21" x2="12" y2="23" />
+					<line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+					<line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+					<line x1="1" y1="12" x2="3" y2="12" />
+					<line x1="21" y1="12" x2="23" y2="12" />
+					<line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+					<line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+				</svg>
+			{/if}
+		</button>
+	</div>
+{/snippet}
 
 <svelte:head>
 	<meta property="og:site_name" content="kit-docs" />
 </svelte:head>
 
-<nav
-	class="bg-surface border-border fixed right-0 bottom-0 left-0 z-50 flex h-16 items-center gap-4 border-t px-6 md:sticky md:top-0 md:bottom-auto md:border-t-0 md:border-b"
+<header
+	class="bg-surface/80 border-border fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-xl md:hidden"
+>
+	<div class="flex h-14 items-center gap-3 px-4">
+		<button
+			class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+			onclick={() => (sidebarOpen = !sidebarOpen)}
+			aria-label="toggle sidebar"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				{#if sidebarOpen}
+					<line x1="18" y1="6" x2="6" y2="18" />
+					<line x1="6" y1="6" x2="18" y2="18" />
+				{:else}
+					<line x1="4" y1="6" x2="20" y2="6" />
+					<line x1="4" y1="12" x2="20" y2="12" />
+					<line x1="4" y1="18" x2="20" y2="18" />
+				{/if}
+			</svg>
+		</button>
+		{@render logo()}
+		<div class="flex-1"></div>
+	</div>
+</header>
+
+<aside
+	style="width: var(--sidebar-shelf)"
+	class="fixed inset-y-0 left-0 z-30 hidden justify-end overflow-hidden bg-(--sidebar) transition-[width] duration-200 ease-out md:flex"
+>
+	<div
+		class={[
+			'border-border-subtle flex h-screen w-64 shrink-0 flex-col gap-3 border-r p-4 transition-opacity duration-150',
+			sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'
+		]}
+	>
+		<div class="flex items-center gap-2 px-1">
+			{@render logo()}
+			<button
+				class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+				onclick={() => (sidebarCollapsed = true)}
+				aria-label="collapse sidebar"
+				title="collapse sidebar"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<rect x="3" y="3" width="18" height="18" rx="2" />
+					<path d="M9 3v18" />
+					<path d="m16 15-3-3 3-3" />
+				</svg>
+			</button>
+		</div>
+		{@render searchTrigger()}
+		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
+			<p
+				class="text-foreground-subtle mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
+			>
+				Documentation
+			</p>
+			{@render navTree()}
+		</nav>
+		{@render chromeRow()}
+	</div>
+</aside>
+
+<div
+	class={[
+		'fixed top-4 left-4 z-40 hidden gap-2 transition-[opacity,transform] duration-200 ease-out md:flex',
+		sidebarCollapsed
+			? 'translate-x-0 opacity-100 delay-150'
+			: 'pointer-events-none -translate-x-2 opacity-0'
+	]}
 >
 	<button
-		class="border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border bg-transparent transition-colors md:hidden"
-		onclick={() => (sidebarOpen = !sidebarOpen)}
-		aria-label="toggle sidebar"
-	>
-		{#if sidebarOpen}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-			</svg>
-		{:else}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line
-					x1="3"
-					y1="18"
-					x2="21"
-					y2="18"
-				/>
-			</svg>
-		{/if}
-	</button>
-	<a href="/" class="text-foreground text-[1.1rem] font-bold tracking-tight no-underline"
-		>kit<span class="text-primary">docs</span></a
-	>
-	<div class="flex-1"></div>
-	<a
-		href="https://github.com/sirkostya009/kit-docs"
-		target="_blank"
-		rel="noopener noreferrer"
-		class="text-foreground-muted hover:text-foreground transition-colors"
-		aria-label="GitHub"
+		class="bg-surface-raised border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border shadow-sm transition-colors"
+		onclick={() => (sidebarCollapsed = false)}
+		aria-label="expand sidebar"
+		title="expand sidebar"
 	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
-			width="24"
-			height="24"
+			width="16"
+			height="16"
 			viewBox="0 0 24 24"
-			fill="currentColor"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
 			aria-hidden="true"
 		>
-			<path
-				d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
-			/>
+			<rect x="3" y="3" width="18" height="18" rx="2" />
+			<path d="M9 3v18" />
+			<path d="m13 15 3-3-3-3" />
 		</svg>
-	</a>
-	<button
-		class="border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border bg-transparent transition-colors"
-		onclick={cycleTheme}
-		aria-label="toggle theme"
-	>
-		{#if theme === 'system'}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<rect x="2" y="3" width="20" height="14" rx="2" /><line
-					x1="8"
-					y1="21"
-					x2="16"
-					y2="21"
-				/><line x1="12" y1="17" x2="12" y2="21" />
-			</svg>
-		{:else if theme === 'dark'}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<circle cx="12" cy="12" r="5" /><line x1="12" y1="1" x2="12" y2="3" /><line
-					x1="12"
-					y1="21"
-					x2="12"
-					y2="23"
-				/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64" /><line
-					x1="18.36"
-					y1="18.36"
-					x2="19.78"
-					y2="19.78"
-				/><line x1="1" y1="12" x2="3" y2="12" /><line x1="21" y1="12" x2="23" y2="12" /><line
-					x1="4.22"
-					y1="19.78"
-					x2="5.64"
-					y2="18.36"
-				/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-			</svg>
-		{:else}
-			<svg
-				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-			</svg>
-		{/if}
 	</button>
-</nav>
-<div class="min-h-[calc(100vh-4rem)] pb-16 md:pb-0">
-	<aside
-		class="border-border bg-surface-raised fixed top-16 h-[calc(100vh-4rem)] w-68 overflow-y-auto border-r py-6 max-md:hidden"
+	<button
+		class="bg-surface-raised border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border shadow-sm transition-colors"
+		onclick={() => (searchOpen = true)}
+		aria-label="search"
+		title="search"
 	>
-		<div class="px-4 pb-4">
-			<p class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase">
-				documentation
-			</p>
-			{#each nav.top as item (item.slug)}
-				<a
-					href="/{item.slug}.html"
-					class={[
-						'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-						page.url.pathname === resolve('/[...slug].html', item)
-							? 'text-primary bg-primary-subtle font-medium'
-							: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
-					]}>{item.title}</a
-				>
-			{/each}
-			{#each nav.groups as group (group.name)}
-				<p
-					class="text-foreground-muted mt-4 mb-1 px-2 text-xs font-semibold tracking-widest uppercase"
-				>
-					{group.name}
-				</p>
-				{#each group.items as item (item.slug)}
-					<a
-						href="/{item.slug}.html"
-						class={[
-							'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-							page.url.pathname === resolve('/[...slug].html', item)
-								? 'text-primary bg-primary-subtle font-medium'
-								: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
-						]}>{item.title}</a
-					>
-				{/each}
-			{/each}
-		</div>
-	</aside>
-	{#if sidebarOpen}
-		<div
-			class="fixed inset-0 bottom-16 z-40 bg-black/50 md:hidden"
-			onclick={() => (sidebarOpen = false)}
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="16"
+			height="16"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+			stroke-linecap="round"
+			stroke-linejoin="round"
 			aria-hidden="true"
-		></div>
-		<aside
-			class="bg-surface-raised border-border fixed top-0 bottom-16 left-0 z-50 w-68 overflow-y-auto border-r py-6 md:hidden"
 		>
-			<div class="px-4 pb-4">
-				<p class="text-foreground-muted mb-1 px-2 text-xs font-semibold tracking-widest uppercase">
-					documentation
-				</p>
-				{#each nav.top as item (item.slug)}
-					<a
-						href="/{item.slug}.html"
-						onclick={() => (sidebarOpen = false)}
-						class={[
-							'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-							page.url.pathname === resolve('/[...slug].html', item)
-								? 'text-primary bg-primary-subtle font-medium'
-								: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
-						]}>{item.title}</a
-					>
-				{/each}
-				{#each nav.groups as group (group.name)}
-					<p
-						class="text-foreground-muted mt-4 mb-1 px-2 text-xs font-semibold tracking-widest uppercase"
-					>
-						{group.name}
-					</p>
-					{#each group.items as item (item.slug)}
-						<a
-							href="/{item.slug}.html"
-							onclick={() => (sidebarOpen = false)}
-							class={[
-								'block rounded-md px-2 py-1.5 text-[0.9rem] no-underline transition-colors',
-								page.url.pathname === resolve('/[...slug].html', item)
-									? 'text-primary bg-primary-subtle font-medium'
-									: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
-							]}>{item.title}</a
-						>
-					{/each}
-				{/each}
-			</div>
-		</aside>
-	{/if}
-	<main class="p-6 max-md:pb-4 md:p-10 md:pl-78">
+			<circle cx="11" cy="11" r="8" />
+			<line x1="21" y1="21" x2="16.65" y2="16.65" />
+		</svg>
+	</button>
+</div>
+
+{#if sidebarOpen}
+	<div
+		class="fixed inset-0 bottom-14 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+		onclick={() => (sidebarOpen = false)}
+		aria-hidden="true"
+	></div>
+	<aside
+		class="bg-surface border-border fixed top-0 bottom-14 left-0 z-50 flex w-72 flex-col gap-3 overflow-y-auto border-r p-4 md:hidden"
+	>
+		{@render searchTrigger()}
+		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
+			<p
+				class="text-foreground-subtle mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
+			>
+				Documentation
+			</p>
+			{@render navTree(() => (sidebarOpen = false))}
+		</nav>
+		{@render chromeRow()}
+	</aside>
+{/if}
+
+<div
+	style="padding-left: var(--sidebar-w)"
+	class="mx-auto flex min-h-screen max-w-(--layout-width) pb-14 transition-[padding] duration-200 ease-out md:pb-0"
+>
+	<main class="mx-auto w-full max-w-5xl min-w-0 flex-1">
 		{@render children()}
 	</main>
 </div>
+
+<SearchModal bind:open={searchOpen} />
