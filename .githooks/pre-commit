@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+set -e
+
+STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
+[ -z "$STAGED" ] && exit 0
+
+ESLINT_FILES=$(echo "$STAGED" | grep -E '\.(js|ts|svelte)$' || true)
+
+pnpm prettier --log-level=warn -u --write --no-error-on-unmatched-pattern --cache $STAGED
+git add $STAGED
+
+[ -n "$ESLINT_FILES" ] && pnpm eslint --cache --cache-location ./node_modules/.cache/eslint/ $ESLINT_FILES
+
+pnpm check

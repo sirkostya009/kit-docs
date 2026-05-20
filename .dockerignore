@@ -1,0 +1,12 @@
+node_modules
+build
+.svelte-kit
+.git
+.vscode
+.output
+.vercel
+.netlify
+.wrangler
+.env
+.env.*
+!.env.example
