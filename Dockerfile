@@ -10,7 +10,9 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 RUN pnpm build
 
-FROM fholzer/nginx-brotli:latest
+FROM alpine:3
+RUN apk add --no-cache nginx nginx-mod-http-brotli
 COPY --from=builder /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/http.d/default.conf
 EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
