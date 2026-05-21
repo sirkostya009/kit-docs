@@ -22,13 +22,12 @@ description: A short summary used for sidebar and meta tags.
 | -------------- | -------- | ------------- | ------------------------------------------------------ |
 | `title`        | string   | slug          | `<title>`, sidebar label, OG title                     |
 | `description`  | string   | `''`          | `<meta name="description">`, OG description, hero card |
-| `order`        | number   | filename      | Sidebar sort order within a group                      |
 | `draft`        | boolean  | `false`       | Excludes the page from production builds               |
 | `aliases`      | string[] | `[]`          | Additional slugs that redirect to the canonical URL    |
 | `lang`         | string   | site default  | Sets `<html lang>` for that page                       |
 | `lastModified` | string   | git timestamp | ISO 8601 — overrides the auto-detected mtime           |
 
-> **Note:** `draft`, `aliases`, and `order` are read from frontmatter today but the corresponding build steps are still landing. Pages with `draft: true` currently render normally — treat the flag as forward-compatible.
+> **Note:** `draft` and `aliases` are read from frontmatter today but the corresponding build steps are still landing. Pages with `draft: true` currently render normally — treat the flag as forward-compatible.
 
 ## Field details
 
@@ -46,14 +45,6 @@ Surfaces in `<meta name="description">`, `og:description`, and the homepage card
 
 ```yaml
 description: How to issue and rotate API keys.
-```
-
-### `order`
-
-Lower numbers float to the top of the sidebar group. Files without `order` are sorted alphabetically.
-
-```yaml
-order: 1
 ```
 
 ### `draft`

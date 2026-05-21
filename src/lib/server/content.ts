@@ -24,9 +24,21 @@ const rawFiles = import.meta.glob('../../../docs/**/*.md', {
 	eager: false,
 });
 
-export const slugs = Object.keys(rawFiles)
-	.map((p) => p.replace('../../../docs/', '').replace(/\.md$/, ''))
-	.map((slug) => ({ slug }));
+const ORDER_PREFIX = /(^|\/)\d+_/g;
+
+type Entry = { slug: string; key: string; path: string };
+
+const entries: Entry[] = Object.keys(rawFiles)
+	.sort()
+	.map((key) => {
+		const path = key.replace('../../../docs/', '');
+		const slug = path.replace(ORDER_PREFIX, '$1').replace(/\.md$/, '');
+		return { slug, key, path };
+	});
+
+const slugToEntry = new Map(entries.map((e) => [e.slug, e]));
+
+export const slugs = entries.map(({ slug }) => ({ slug }));
 
 const ADMONITION_NAMES = new Set(['note', 'tip', 'info', 'warning', 'caution', 'danger']);
 
@@ -125,11 +137,11 @@ function extractHeadings(raw: string): Heading[] {
 
 const lastModifiedCache = new Map<string, string | null>();
 
-function gitLastModified(slug: string): string | null {
-	if (lastModifiedCache.has(slug)) return lastModifiedCache.get(slug)!;
+function gitLastModified(relPath: string): string | null {
+	if (lastModifiedCache.has(relPath)) return lastModifiedCache.get(relPath)!;
 	let value: string | null;
 	try {
-		const path = resolvePath(process.cwd(), 'docs', `${slug}.md`);
+		const path = resolvePath(process.cwd(), 'docs', relPath);
 		const out = execSync(`git log -1 --format=%cI -- "${path}"`, {
 			encoding: 'utf8',
 			stdio: ['ignore', 'pipe', 'ignore'],
@@ -138,14 +150,14 @@ function gitLastModified(slug: string): string | null {
 	} catch {
 		value = null;
 	}
-	lastModifiedCache.set(slug, value);
+	lastModifiedCache.set(relPath, value);
 	return value;
 }
 
 export async function getPage(slug: string) {
-	const key = `../../../docs/${slug}.md`;
-	if (!(key in rawFiles)) return null;
-	const raw = (await rawFiles[key]()) as string;
+	const entry = slugToEntry.get(slug);
+	if (!entry) return null;
+	const raw = (await rawFiles[entry.key]()) as string;
 	const { data: metadata, content } = matter(raw);
 	const html = String(await processor.process(content));
 	return {
@@ -153,7 +165,7 @@ export async function getPage(slug: string) {
 		metadata: metadata as Record<string, string>,
 		raw,
 		headings: extractHeadings(content),
-		lastModified: (metadata.lastModified as string | undefined) ?? gitLastModified(slug),
+		lastModified: (metadata.lastModified as string | undefined) ?? gitLastModified(entry.path),
 	};
 }
 

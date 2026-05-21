@@ -24,6 +24,22 @@ docs/
 
 Top-level files render as flat entries. Files in subdirectories group under the directory name. See [sub-routes](/advanced/sub-routes.html) for the full mechanism.
 
+### Sidebar order
+
+By default, entries sort lexically by filename within each group. Prefix files or folders with `NN_` to force a specific order — the prefix is stripped from the URL slug. So `docs/01_guides/02_writing-content.md` serves at `/guides/writing-content.html` but appears between `00_` and `03_` siblings in the sidebar.
+
+```
+docs/
+  00_getting-started.md      → /getting-started.html
+  01_guides/
+    00_installation.md       → /guides/installation.html
+    10_writing-content.md    → /guides/writing-content.html
+  02_advanced/
+    sub-routes.md            → /advanced/sub-routes.html
+```
+
+Mix prefixed and unprefixed files freely; unprefixed ones sort after the digit range.
+
 ## Headings
 
 Use a single `# h1` per page — the page title from frontmatter is not auto-rendered into the body. After that, only `h2` and `h3` appear in the on-this-page nav.
