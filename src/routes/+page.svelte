@@ -1,4 +1,21 @@
 <script lang="ts">
+	const { data } = $props();
+	const description = 'Build docs that ship as static files.';
+	const canonicalUrl = $derived(`${data.origin}/`);
+	const ldScript = $derived(
+		'<script type="application/ld+json">' +
+			JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'WebSite',
+				name: 'kit-docs',
+				description,
+				url: canonicalUrl,
+				inLanguage: 'en',
+			}) +
+			'</' +
+			'script>',
+	);
+
 	const cards = [
 		{
 			title: 'Getting started',
@@ -29,10 +46,18 @@
 
 <svelte:head>
 	<title>kit-docs · sveltekit docs starter</title>
-	<meta name="description" content="Build docs that ship as static files." />
+	<link rel="canonical" href={canonicalUrl} />
+	<meta name="description" content={description} />
 	<meta property="og:title" content="kit-docs" />
-	<meta property="og:description" content="Build docs that ship as static files." />
+	<meta property="og:description" content={description} />
 	<meta property="og:type" content="website" />
+	<meta property="og:url" content={canonicalUrl} />
+	<meta property="og:locale" content="en_US" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="kit-docs" />
+	<meta name="twitter:description" content={description} />
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html ldScript}
 </svelte:head>
 
 <article class="relative overflow-hidden px-4 py-8 md:px-12 md:py-12">

@@ -2,7 +2,26 @@
 	import { SvelteSet } from 'svelte/reactivity';
 
 	const { data } = $props();
+	const pageTitle = $derived(data.metadata.title ?? 'kit-docs');
 	const title = $derived(data.metadata.title ? `${data.metadata.title} · kit-docs` : 'kit-docs');
+	const description = $derived(data.metadata.description ?? '');
+	const canonicalUrl = $derived(`${data.origin}/${data.slug}.html`);
+	const ldScript = $derived(
+		'<script type="application/ld+json">' +
+			JSON.stringify({
+				'@context': 'https://schema.org',
+				'@type': 'TechArticle',
+				headline: pageTitle,
+				...(description && { description }),
+				url: canonicalUrl,
+				mainEntityOfPage: canonicalUrl,
+				inLanguage: 'en',
+				isPartOf: { '@type': 'WebSite', name: 'kit-docs', url: data.origin },
+				...(data.lastModified && { dateModified: data.lastModified }),
+			}) +
+			'</' +
+			'script>',
+	);
 
 	const crumbs = $derived.by(() => {
 		const groupTitles = Object.fromEntries(
@@ -100,14 +119,29 @@
 
 <svelte:head>
 	<title>{title}</title>
-	<meta name="description" content={data.metadata.description ?? ''} />
-	<meta property="og:title" content={title} />
-	<meta property="og:description" content={data.metadata.description ?? ''} />
+	<link rel="canonical" href={canonicalUrl} />
+	<link rel="alternate" type="text/markdown" href="/{data.slug}.md" />
+	{#if description}
+		<meta name="description" content={description} />
+	{/if}
+	<meta property="og:title" content={pageTitle} />
+	{#if description}
+		<meta property="og:description" content={description} />
+	{/if}
 	<meta property="og:type" content="article" />
+	<meta property="og:url" content={canonicalUrl} />
+	<meta property="og:locale" content="en_US" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content={pageTitle} />
+	{#if description}
+		<meta name="twitter:description" content={description} />
+	{/if}
 	{#if data.lastModified}
 		<meta property="article:modified_time" content={data.lastModified} />
 		<meta name="last-modified" content={data.lastModified} />
 	{/if}
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html ldScript}
 </svelte:head>
 
 <div class="flex min-w-0">

@@ -1,12 +1,6 @@
-import { env } from '$env/dynamic/private';
+import { origin } from '$lib/server/origin';
 
 export const prerender = true;
-
-const origin =
-	env.ORIGIN ??
-	env.PUBLIC_ORIGIN ??
-	(env.VERCEL_PROJECT_PRODUCTION_URL && `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`) ??
-	'http://localhost:5173';
 
 export function GET() {
 	const body = `User-agent: *
