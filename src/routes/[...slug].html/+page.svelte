@@ -27,30 +27,28 @@
 		const groupTitles = Object.fromEntries(
 			data.nav.groups.map((g) => [g.name, g.name.replace(/-/g, ' ')]),
 		);
-		const parts = data.slug.split('/');
-		const out: Array<{ label: string; href: string | null }> = [];
-		for (let i = 0; i < parts.length - 1; i++) {
-			const name = parts[i];
-			out.push({ label: groupTitles[name] ?? name, href: null });
-		}
-		return out;
+		return data.slug.split('/').map((name: string) => ({
+			label: groupTitles[name] ?? name,
+			href: null,
+		}));
 	});
 
-	const lastModifiedLabel = $derived.by(() => {
-		if (!data.lastModified) return null;
-		const d = new Date(data.lastModified);
-		return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
-	});
+	const lastModifiedLabel = $derived(
+		data.lastModified &&
+			new Date(data.lastModified).toLocaleDateString(undefined, {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+			}),
+	);
 
 	let article = $state<HTMLElement>();
 	let mobileTocOpen = $state(false);
 	let scrollProgress = $state(0);
 	const active = new SvelteSet<string>();
-	const activeHeading = $derived.by(() => {
-		let last: string | undefined;
-		for (const h of data.headings) if (active.has(h.id)) last = h.text;
-		return last;
-	});
+	const activeHeadings = $derived(
+		data.headings.filter((h) => active.has(h?.id)).map((h) => h.text),
+	);
 
 	$effect(() => {
 		void data.slug;
@@ -60,13 +58,17 @@
 
 		function compute() {
 			const vh = window.innerHeight;
+			const minOverlap = vh * 0.2;
 			const articleBottom = article!.getBoundingClientRect().bottom;
 			const visible: string[] = [];
 			for (let i = 0; i < headings.length; i++) {
 				const top = headings[i].getBoundingClientRect().top;
 				const bottom =
 					i + 1 < headings.length ? headings[i + 1].getBoundingClientRect().top : articleBottom;
-				if (bottom > 0 && top < vh) visible.push(headings[i].id);
+				const overlap = Math.max(0, Math.min(bottom, vh) - Math.max(top, 0));
+				const sectionHeight = bottom - top;
+				if (overlap >= minOverlap || (sectionHeight > 0 && overlap >= sectionHeight * 0.5))
+					visible.push(headings[i].id);
 			}
 			for (const id of active) if (!visible.includes(id)) active.delete(id);
 			for (const id of visible) active.add(id);
@@ -223,7 +225,7 @@
 		{#if data.headings.length > 0}
 			<details
 				bind:open={mobileTocOpen}
-				class="border-border-subtle bg-surface-raised mobile-toc sticky top-2 z-10 mb-6 rounded-lg border lg:hidden"
+				class="border-border-subtle bg-surface-raised mobile-toc sticky top-3.25 z-10 mb-6 rounded-lg border lg:hidden"
 			>
 				<summary
 					class="text-foreground hover:text-foreground flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm font-medium select-none"
@@ -259,7 +261,9 @@
 							class="ring-progress"
 						/>
 					</svg>
-					<span class="flex-1 truncate text-left">{activeHeading ?? 'On this page'}</span>
+					<span class="flex-1 truncate text-left"
+						>{activeHeadings.length > 0 ? activeHeadings.join(', ') : 'On this page'}</span
+					>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="12"
@@ -284,7 +288,10 @@
 								data-sveltekit-noscroll
 								onclick={() => (mobileTocOpen = false)}
 								class={[
-									'text-foreground-muted hover:text-foreground block truncate py-1 text-sm no-underline transition-colors',
+									'block truncate py-1 text-sm no-underline transition-colors',
+									active.has(h.id)
+										? 'text-primary font-medium'
+										: 'text-foreground-muted hover:text-foreground',
 									h.level === 3 ? 'pl-4' : '',
 								]}>{h.text}</a
 							>
