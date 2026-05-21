@@ -43,6 +43,7 @@
 	});
 
 	let article = $state<HTMLElement>();
+	let mobileTocOpen = $state(false);
 	const active = new SvelteSet<string>();
 
 	$effect(() => {
@@ -191,6 +192,49 @@
 			</nav>
 		{/if}
 
+		{#if data.headings.length > 0}
+			<details
+				bind:open={mobileTocOpen}
+				class="border-border-subtle bg-surface-raised mobile-toc mb-6 rounded-lg border lg:hidden"
+			>
+				<summary
+					class="text-foreground-muted hover:text-foreground flex cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium select-none"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="12"
+						height="12"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+						class="chevron"
+					>
+						<path d="m9 18 6-6-6-6" />
+					</svg>
+					On this page
+				</summary>
+				<ul class="border-border-subtle border-t px-4 py-2">
+					{#each data.headings as h (h.id)}
+						<li>
+							<a
+								href="#{h.id}"
+								data-sveltekit-noscroll
+								onclick={() => (mobileTocOpen = false)}
+								class={[
+									'text-foreground-muted hover:text-foreground block truncate py-1 text-sm no-underline transition-colors',
+									h.level === 3 ? 'pl-4' : '',
+								]}>{h.text}</a
+							>
+						</li>
+					{/each}
+				</ul>
+			</details>
+		{/if}
+
 		<article bind:this={article} class="prose max-w-none">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html data.html}
@@ -316,6 +360,22 @@
 </div>
 
 <style>
+	.mobile-toc > summary {
+		list-style: none;
+	}
+
+	.mobile-toc > summary::-webkit-details-marker {
+		display: none;
+	}
+
+	.mobile-toc > summary .chevron {
+		transition: transform 0.15s ease;
+	}
+
+	.mobile-toc[open] > summary .chevron {
+		transform: rotate(90deg);
+	}
+
 	.prose {
 		--tw-prose-body: var(--foreground);
 		--tw-prose-headings: var(--foreground);
