@@ -262,3 +262,27 @@ import { unified } from 'unified';
 
 const processor = unified().use(remarkParse).use(remarkGfm);
 ```
+
+### Line numbers
+
+```ts {showLineNumbers}
+function noop() {}
+function add(a: number, b: number) {
+	return a + b;
+}
+function done() {}
+```
+
+### Line numbers with title and highlight
+
+```ts {2-3} title="src/lib/math.ts" {showLineNumbers}
+function noop() {}
+function add(a: number, b: number) {
+	return a + b;
+}
+function done() {}
+```
+
+### Inline highlighting
+
+The runtime function `fetch(url){:js}` returns a Promise, while `let mut x: i32 = 0;{:rust}` declares a mutable binding. Languages render with the same dual-theme tokens as fenced blocks.

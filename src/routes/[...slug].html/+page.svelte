@@ -78,17 +78,33 @@
 			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
 		const checkSvg =
 			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+		const wrapSvg =
+			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="3 6 21 6"/><path d="M3 12h15a3 3 0 0 1 0 6h-4"/><polyline points="16 16 14 18 16 20"/><line x1="3" y1="18" x2="10" y2="18"/></svg>';
 		const pres = article.querySelectorAll<HTMLPreElement>('pre.shiki');
 		const cleanups: Array<() => void> = [];
 		for (const pre of pres) {
 			if (pre.querySelector('button.copy-code')) continue;
+
+			const wrap = document.createElement('button');
+			wrap.type = 'button';
+			wrap.className = 'wrap-code';
+			wrap.setAttribute('aria-label', 'toggle line wrap');
+			wrap.setAttribute('aria-pressed', 'false');
+			wrap.innerHTML = wrapSvg;
+			const onWrapClick = () => {
+				const enabled = pre.toggleAttribute('data-wrap');
+				wrap.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+			};
+			wrap.addEventListener('click', onWrapClick);
+			pre.appendChild(wrap);
+
 			const btn = document.createElement('button');
 			btn.type = 'button';
 			btn.className = 'copy-code';
 			btn.setAttribute('aria-label', 'copy code');
 			btn.innerHTML = copySvg;
 			let timeout: ReturnType<typeof setTimeout> | null = null;
-			const onClick = async () => {
+			const onCopyClick = async () => {
 				const code = pre.querySelector('code')?.innerText ?? pre.innerText;
 				try {
 					await navigator.clipboard.writeText(code);
@@ -103,12 +119,15 @@
 					btn.dataset.state = 'failed';
 				}
 			};
-			btn.addEventListener('click', onClick);
+			btn.addEventListener('click', onCopyClick);
 			pre.appendChild(btn);
+
 			cleanups.push(() => {
 				if (timeout) clearTimeout(timeout);
-				btn.removeEventListener('click', onClick);
+				btn.removeEventListener('click', onCopyClick);
 				btn.remove();
+				wrap.removeEventListener('click', onWrapClick);
+				wrap.remove();
 			});
 		}
 		return () => {
@@ -367,7 +386,7 @@
 		content: none;
 	}
 
-	:global(.prose :not(pre) > code) {
+	:global(.prose :not(pre):not(.shiki) > code) {
 		background: var(--surface-overlay);
 		border: 1px solid var(--border-subtle);
 		border-radius: 0.375rem;
@@ -419,7 +438,7 @@
 		background: var(--surface-raised);
 	}
 
-	:global(.prose .shiki) {
+	:global(.prose pre.shiki) {
 		padding: 1rem 1.25rem;
 		border-radius: 0.5rem;
 		border: 1px solid var(--border);
@@ -655,10 +674,10 @@
 		position: relative;
 	}
 
-	:global(.prose pre.shiki > button.copy-code) {
+	:global(.prose pre.shiki > button.copy-code),
+	:global(.prose pre.shiki > button.wrap-code) {
 		position: absolute;
 		top: 0.5rem;
-		right: 0.5rem;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -676,12 +695,23 @@
 			background-color 0.15s ease;
 	}
 
+	:global(.prose pre.shiki > button.copy-code) {
+		right: 0.5rem;
+	}
+
+	:global(.prose pre.shiki > button.wrap-code) {
+		right: 2.5rem;
+	}
+
 	:global(.prose pre.shiki:hover > button.copy-code),
-	:global(.prose pre.shiki > button.copy-code:focus-visible) {
+	:global(.prose pre.shiki:hover > button.wrap-code),
+	:global(.prose pre.shiki > button.copy-code:focus-visible),
+	:global(.prose pre.shiki > button.wrap-code:focus-visible) {
 		opacity: 1;
 	}
 
-	:global(.prose pre.shiki > button.copy-code:hover) {
+	:global(.prose pre.shiki > button.copy-code:hover),
+	:global(.prose pre.shiki > button.wrap-code:hover) {
 		color: var(--foreground);
 		background: var(--surface-raised);
 	}
@@ -691,9 +721,95 @@
 		opacity: 1;
 	}
 
-	:global(.prose pre.shiki[data-title] > button.copy-code) {
-		top: 0.13rem;
+	:global(.prose pre.shiki > button.wrap-code[aria-pressed='true']) {
+		color: var(--primary);
+		border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+		opacity: 1;
+	}
+
+	:global(.prose pre.shiki[data-title] > button.copy-code),
+	:global(.prose pre.shiki[data-title] > button.wrap-code) {
+		top: 0.25rem;
 		width: 1.5rem;
 		height: 1.5rem;
+	}
+
+	:global(.prose pre.shiki[data-title] > button.wrap-code) {
+		right: 2.2rem;
+	}
+
+	:global(.prose pre.shiki[data-lang])::after {
+		content: attr(data-lang);
+		position: absolute;
+		top: 0.55rem;
+		right: 0.7rem;
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.7rem;
+		color: var(--foreground-subtle);
+		letter-spacing: 0.02em;
+		pointer-events: none;
+		transition: opacity 0.15s ease;
+	}
+
+	:global(.prose pre.shiki[data-lang]:hover)::after,
+	:global(.prose pre.shiki[data-lang]:focus-within)::after {
+		opacity: 0;
+	}
+
+	:global(.prose pre.shiki[data-title][data-lang])::after {
+		top: 0.4rem;
+		right: 0.85rem;
+	}
+
+	:global(.prose pre.shiki[data-line-numbers]) {
+		counter-reset: shiki-line;
+	}
+
+	:global(.prose pre.shiki[data-line-numbers] code) {
+		display: grid;
+	}
+
+	:global(.prose pre.shiki[data-line-numbers] .line) {
+		counter-increment: shiki-line;
+	}
+
+	:global(.prose pre.shiki[data-line-numbers] .line)::before {
+		content: counter(shiki-line);
+		display: inline-block;
+		width: 1.75em;
+		margin-right: 1.25rem;
+		text-align: right;
+		color: var(--foreground-subtle);
+		user-select: none;
+	}
+
+	:global(.prose pre.shiki[data-wrap] code) {
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+
+	:global(.prose :not(pre) > span.shiki) {
+		background: var(--surface-overlay);
+		border: 1px solid var(--border-subtle);
+		border-radius: 0.375rem;
+		padding: 0.15em 0.4em;
+		font-size: 0.85em;
+		font-weight: 500;
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	}
+
+	:global(.prose :not(pre) > span.shiki > code) {
+		font-size: inherit;
+		font-weight: inherit;
+		color: inherit;
+		font-family: inherit;
+	}
+
+	:global(.prose :not(pre) > span.shiki span) {
+		color: var(--shiki-light);
+	}
+
+	:global(.dark .prose :not(pre) > span.shiki span) {
+		color: var(--shiki-dark);
 	}
 </style>

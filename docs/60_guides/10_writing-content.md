@@ -68,7 +68,7 @@ const greet = (name: string) => `hello, ${name}`;
 
 ### Inline code
 
-Wrap with single backticks: `const x = 1`.
+Wrap with single backticks: `const x = 1`. Append a `{:lang}` annotation to syntax-highlight the snippet — `` `fetch(url){:js}` `` renders as `fetch(url){:js}`.
 
 ### Highlighting lines
 
@@ -107,9 +107,28 @@ import { unified } from 'unified';
 ```
 ````
 
-### Copy button
+### Line numbers
 
-Every rendered code block gets a copy-to-clipboard button on hover — nothing to enable, nothing to opt out of.
+Add `showLineNumbers` to the meta string to render a left gutter:
+
+````markdown
+```ts {showLineNumbers}
+const a = 1;
+const b = 2;
+```
+````
+
+Pairs with line highlights and the `title="..."` decorator.
+
+### Chrome
+
+Every rendered code block gets:
+
+- a language badge in the top-right corner (uppercase, derived from the fence language)
+- a copy-to-clipboard button revealed on hover
+- a wrap toggle button revealed on hover — flips long lines from horizontal scroll to soft wrap
+
+Nothing to enable, nothing to opt out of.
 
 ## Callouts
 

@@ -96,6 +96,30 @@ function transformerTitle(): ShikiTransformer {
 	};
 }
 
+function transformerLang(): ShikiTransformer {
+	return {
+		name: 'lang',
+		pre(node) {
+			const lang = (this.options as { lang?: string }).lang;
+			if (!lang || lang === 'text' || lang === 'plain' || lang === 'plaintext') return;
+			node.properties ??= {};
+			node.properties['data-lang'] = lang;
+		},
+	};
+}
+
+function transformerLineNumbers(): ShikiTransformer {
+	return {
+		name: 'line-numbers',
+		pre(node) {
+			const raw = (this.options.meta as { __raw?: string } | undefined)?.__raw;
+			if (!raw || !/\bshowLineNumbers\b/.test(raw)) return;
+			node.properties ??= {};
+			node.properties['data-line-numbers'] = '';
+		},
+	};
+}
+
 const processor = unified()
 	.use(remarkParse)
 	.use(remarkGfm)
@@ -112,11 +136,14 @@ const processor = unified()
 		defaultColor: false,
 		defaultLanguage: 'text',
 		fallbackLanguage: 'text',
+		inline: 'tailing-curly-colon',
 		transformers: [
 			transformerNotationHighlight(),
 			transformerNotationDiff(),
 			transformerMetaHighlight(),
 			transformerTitle(),
+			transformerLang(),
+			transformerLineNumbers(),
 		],
 	})
 	.use(rehypeStringify);

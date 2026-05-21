@@ -77,15 +77,14 @@ const d = 4;
 ```
 ````
 
-| Decorator         | Effect                              |
-| ----------------- | ----------------------------------- |
-| `{2-4}`           | Highlight a line range              |
-| `{2,4,6}`         | Highlight discrete lines            |
-| `title="..."`     | Render a title bar above the block  |
-| `showLineNumbers` | Show 1-indexed line numbers         |
-| `noCopy`          | Hide the copy button (when enabled) |
+| Decorator         | Effect                                       |
+| ----------------- | -------------------------------------------- |
+| `{2-4}`           | Highlight a line range                       |
+| `{2,4,6}`         | Highlight discrete lines                     |
+| `title="..."`     | Render a title bar above the block           |
+| `showLineNumbers` | Show 1-indexed line numbers in a left gutter |
 
-> **Note:** Decorators rely on Shiki transformers. The `transformerNotationHighlight`, `transformerNotationDiff`, and `transformerMetaHighlight` transformers are commonly used together — adding them is a one-line change in `content.ts` but the matching CSS is not in the starter yet.
+Highlights and diff annotations come from `transformerNotationHighlight`, `transformerNotationDiff`, and `transformerMetaHighlight`. Title bars and line numbers come from custom transformers in `src/lib/server/content.ts` (`transformerTitle`, `transformerLineNumbers`).
 
 ## Inline highlighting
 
@@ -95,31 +94,20 @@ Wrap inline code with a language using the `{:lang}` annotation:
 The function `fetch(url) {:js}` returns a Promise.
 ```
 
-This is a Shiki feature; enable it by passing `inline: 'tailing-curly-colon'` to the plugin.
+Renders as: `fetch(url) {:js}` — tokens get the same dual-theme coloring as fenced blocks. This is enabled in `content.ts` via `inline: 'tailing-curly-colon'` on the rehype plugin.
 
-## Copy button
+## Code block chrome
 
-A copy-to-clipboard button on every code block is not in the starter, but the markup is friendly to a tiny enhancement script:
+Every rendered code block is enhanced at runtime in `[...slug].html/+page.svelte`:
 
-```svelte
-<script>
-	import { onMount } from 'svelte';
+- **language badge** — `data-lang` attribute is set by `transformerLang`; CSS renders the language in the top-right corner. Hidden on hover so the action buttons can take the space.
+- **copy button** — clipboard icon revealed on hover, swaps to a checkmark for 1.5s on success.
+- **wrap toggle** — toggles `data-wrap` on the `<pre>`; CSS switches `white-space` to `pre-wrap` so long lines fold instead of scrolling.
 
-	onMount(() => {
-		for (const pre of document.querySelectorAll('pre.shiki')) {
-			const btn = document.createElement('button');
-			btn.textContent = 'copy';
-			btn.onclick = () => navigator.clipboard.writeText(pre.innerText);
-			pre.prepend(btn);
-		}
-	});
-</script>
-```
-
-Drop that into `[...slug].html/+page.svelte` and style with the existing surface tokens.
+All three live next to each other in the top-right. None of them require frontmatter or per-block opt-in.
 
 ## Performance
 
 Shiki loads themes and grammars eagerly during the build, then the bundle ships zero JS for highlighting — every code block is plain HTML with inline styles. Adding more languages or themes increases build time but not page weight.
 
-For very large doc sets, switch to [`expressive-code`](https://expressive-code.com) (also Shiki-based, with bundled CSS for line numbers, titles, and the copy button).
+For very large doc sets, switch to [`expressive-code`](https://expressive-code.com) — also Shiki-based, with frames, collapsible sections, and twoslash baked in.
