@@ -4,26 +4,26 @@
 			title: 'Getting started',
 			description: 'Spin up a docs site in under a minute.',
 			href: '/getting-started.html',
-			icon: 'rocket'
+			icon: 'rocket',
 		},
 		{
 			title: 'Configuration',
 			description: 'Adapters, build options, deployment.',
 			href: '/configuration.html',
-			icon: 'sliders'
+			icon: 'sliders',
 		},
 		{
 			title: 'Guides',
 			description: 'Install, customize, and theme your site.',
 			href: '/guides/installation.html',
-			icon: 'book'
+			icon: 'book',
 		},
 		{
 			title: 'Markdown showcase',
 			description: 'See what renders out of the box.',
 			href: '/markdown-showcase.html',
-			icon: 'sparkles'
-		}
+			icon: 'sparkles',
+		},
 	];
 </script>
 
@@ -117,87 +117,95 @@
 							aria-hidden="true"
 							class="bg-primary-subtle text-primary mb-1 flex size-8 items-center justify-center rounded-lg"
 						>
-						{#if card.icon === 'rocket'}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-								><path
-									d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"
-								/><path
-									d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"
-								/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path
-									d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"
-								/></svg
-							>
-						{:else if card.icon === 'sliders'}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-								><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line
-									x1="12"
-									y1="21"
-									x2="12"
-									y2="12"
-								/><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line
-									x1="20"
-									y1="12"
-									x2="20"
-									y2="3"
-								/><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line
-									x1="17"
-									y1="16"
-									x2="23"
-									y2="16"
-								/></svg
-							>
-						{:else if card.icon === 'book'}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-								><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path
-									d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
-								/></svg
-							>
-						{:else}
-							<svg
-								xmlns="http://www.w3.org/2000/svg"
-								width="16"
-								height="16"
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-								aria-hidden="true"
-								><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"
-								/><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path d="M17 19h4" /></svg
-							>
-						{/if}
+							{#if card.icon === 'rocket'}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+									><path
+										d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"
+									/><path
+										d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"
+									/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" /><path
+										d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"
+									/></svg
+								>
+							{:else if card.icon === 'sliders'}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+									><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line
+										x1="12"
+										y1="21"
+										x2="12"
+										y2="12"
+									/><line x1="12" y1="8" x2="12" y2="3" /><line
+										x1="20"
+										y1="21"
+										x2="20"
+										y2="16"
+									/><line x1="20" y1="12" x2="20" y2="3" /><line
+										x1="1"
+										y1="14"
+										x2="7"
+										y2="14"
+									/><line x1="9" y1="8" x2="15" y2="8" /><line
+										x1="17"
+										y1="16"
+										x2="23"
+										y2="16"
+									/></svg
+								>
+							{:else if card.icon === 'book'}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+									><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path
+										d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+									/></svg
+								>
+							{:else}
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+									><path
+										d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3z"
+									/><path d="M5 3v4" /><path d="M19 17v4" /><path d="M3 5h4" /><path
+										d="M17 19h4"
+									/></svg
+								>
+							{/if}
 						</span>
 						<span class="text-foreground text-sm font-semibold">{card.title}</span>
 						<span class="text-foreground-muted text-sm">{card.description}</span>

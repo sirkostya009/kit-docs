@@ -195,3 +195,70 @@ Footnotes render as superscript links.[^1] Named footnotes work too.[^note]
 [^1]: First footnote — plain text.
 
 [^note]: A named footnote. Can contain `code` and **formatting**.
+
+---
+
+## Admonitions
+
+:::note
+Default informational call-out. Works with **markdown** inside.
+:::
+
+:::tip
+Use tips for forward-looking advice.
+:::
+
+:::info[Heads-up]
+Override the default heading by putting the label in square brackets after the directive name.
+:::
+
+:::warning
+Heading for footguns the reader is about to walk into.
+:::
+
+:::caution
+For risky operations.
+:::
+
+:::danger
+For irreversible / destructive actions.
+:::
+
+---
+
+## Code annotations
+
+### Line highlight via meta
+
+```ts {2-3}
+function noop() {}
+function add(a: number, b: number) {
+	return a + b;
+}
+function done() {}
+```
+
+### Line highlight via magic comment
+
+```ts
+function noop() {}
+function add(a: number, b: number) {
+	return a + b; // [!code highlight]
+}
+```
+
+### Diff notation
+
+```ts
+function noop() {}
+function removed() {} // [!code --]
+function added() {} // [!code ++]
+```
+
+### Title bar
+
+```ts title="src/lib/server/content.ts"
+import { unified } from 'unified';
+
+const processor = unified().use(remarkParse).use(remarkGfm);
+```

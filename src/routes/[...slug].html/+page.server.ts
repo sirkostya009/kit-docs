@@ -14,7 +14,8 @@ export async function load({ params }) {
 		html: page.html,
 		metadata: page.metadata,
 		headings: page.headings,
+		lastModified: page.lastModified,
 		prev: idx > 0 ? nav[idx - 1] : null,
-		next: idx >= 0 && idx < nav.length - 1 ? nav[idx + 1] : null
+		next: idx >= 0 && idx < nav.length - 1 ? nav[idx + 1] : null,
 	};
 }

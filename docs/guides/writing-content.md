@@ -56,7 +56,7 @@ Wrap with single backticks: `const x = 1`.
 
 ### Highlighting lines
 
-Append a line range:
+Append a line range to the language tag:
 
 ````markdown
 ```ts {2-4}
@@ -68,21 +68,64 @@ function done() {}
 ```
 ````
 
-> **Note:** Line highlighting requires the `transformerNotationHighlight` Shiki transformer. It's wired up but not yet styled — see [the open task](https://github.com/sirkostya009/kit-docs/issues).
+Or annotate inline with magic comments:
+
+````markdown
+```ts
+function noop() {}
+function add(a: number, b: number) {
+	return a + b; // [!code highlight]
+}
+function remove() {} // [!code --]
+function added() {} // [!code ++]
+```
+````
+
+### Titles
+
+Add a `title="..."` to the meta string to render a header bar above the block:
+
+````markdown
+```ts title="src/lib/server/content.ts"
+import { unified } from 'unified';
+```
+````
+
+### Copy button
+
+Every rendered code block gets a copy-to-clipboard button on hover — nothing to enable, nothing to opt out of.
 
 ## Callouts
 
-Use blockquotes. The starter styles them with a colored left border based on the leading bold word:
+Use directive syntax for first-class callouts. Six flavors are recognized: `note`, `info`, `tip`, `warning`, `caution`, `danger`.
 
 ```markdown
-> **Note:** Plain informational call-out.
+:::tip
+This is a tip. Markdown inside works — **bold**, `code`, [links](/).
+:::
 
-> **Tip:** Forward-looking advice.
-
-> **Warning:** Highlight a footgun.
+:::warning[Custom heading]
+Override the default heading by putting the label in square brackets after the directive name.
+:::
 ```
 
-Nested blockquotes cycle through colors — yellow, red, orange, green — up to eight levels deep. Useful for indicating severity in postmortem-style docs.
+:::note
+Plain informational call-out.
+:::
+
+:::tip
+Forward-looking advice — good for "you can also..." asides.
+:::
+
+:::warning
+Highlight a footgun before the reader hits it.
+:::
+
+:::danger
+Reserve for irreversible actions (data loss, security risk).
+:::
+
+Blockquotes still work for simpler asides and cycle through colors at deeper nesting levels.
 
 ## Tables
 

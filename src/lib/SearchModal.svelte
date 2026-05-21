@@ -131,7 +131,7 @@
 		if (terms.length === 0) return text;
 		const pattern = new RegExp(
 			'(' + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')',
-			'gi'
+			'gi',
 		);
 		return text.replace(pattern, '<mark>$1</mark>');
 	}
@@ -142,7 +142,16 @@
 	oncancel={onCancel}
 	onclick={onClick}
 	data-closing={closing}
-	class="bg-surface-raised border-border w-full max-w-xl rounded-lg border p-0 shadow-2xl"
+	class="
+		bg-surface-raised border-border mx-auto mt-[10vh] mb-auto w-full max-w-xl rounded-lg border p-0 shadow-2xl
+		transition-[opacity,transform] duration-75 ease-out
+
+		backdrop:bg-black/30 backdrop:transition-colors backdrop:duration-75
+		backdrop:ease-out data-[closing=true]:-translate-y-2 data-[closing=true]:scale-[0.97]
+		data-[closing=true]:opacity-0 data-[closing=true]:backdrop:bg-transparent starting:open:-translate-y-2 starting:open:scale-[0.97]
+		starting:open:opacity-0
+		starting:open:backdrop:bg-transparent
+	"
 >
 	<div class="border-border-subtle flex items-center gap-3 border-b px-4">
 		<svg
@@ -198,7 +207,7 @@
 								'group block rounded-md px-3 py-2 no-underline transition-colors',
 								selected === i
 									? 'bg-primary-subtle text-primary'
-									: 'text-foreground hover:bg-surface-overlay'
+									: 'text-foreground hover:bg-surface-overlay',
 							]}
 							role="option"
 							aria-selected={selected === i}

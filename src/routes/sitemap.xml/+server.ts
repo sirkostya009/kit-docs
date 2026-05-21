@@ -12,7 +12,7 @@ const origin =
 export function GET() {
 	const pages = [
 		{ path: '/', priority: '1.0' },
-		...slugs.map(({ slug }) => ({ path: `/${slug}.html`, priority: '0.8' }))
+		...slugs.map(({ slug }) => ({ path: `/${slug}.html`, priority: '0.8' })),
 	];
 
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -22,12 +22,12 @@ ${pages
 		({ path, priority }) => `\t<url>
 \t\t<loc>${origin}${path}</loc>
 \t\t<priority>${priority}</priority>
-\t</url>`
+\t</url>`,
 	)
 	.join('\n')}
 </urlset>`;
 
 	return new Response(xml, {
-		headers: { 'content-type': 'application/xml' }
+		headers: { 'content-type': 'application/xml' },
 	});
 }

@@ -12,7 +12,7 @@
 	const themes: Theme[] = ['light', 'dark', 'system'];
 
 	let theme = $state<Theme>(
-		browser ? ((localStorage.getItem('theme') as Theme) ?? 'system') : 'system'
+		browser ? ((localStorage.getItem('theme') as Theme) ?? 'system') : 'system',
 	);
 
 	let sidebarOpen = $state(false);
@@ -20,7 +20,7 @@
 	const isMac = browser && /Mac|iPhone|iPad|iPod/.test(navigator.platform || navigator.userAgent);
 	const modKey = isMac ? '⌘' : 'Ctrl';
 	let sidebarCollapsed = $state(
-		browser ? localStorage.getItem('sidebar-collapsed') === 'true' : false
+		browser ? localStorage.getItem('sidebar-collapsed') === 'true' : false,
 	);
 
 	$effect(() => {
@@ -76,7 +76,7 @@
 			'block rounded-md px-3 py-1.5 text-sm no-underline transition-colors',
 			active
 				? 'text-primary bg-primary-subtle font-medium'
-				: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay'
+				: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay',
 		]}
 	>
 		{item.title}
@@ -273,7 +273,7 @@
 	<div
 		class={[
 			'border-border-subtle flex h-screen w-64 shrink-0 flex-col gap-3 border-r p-4 transition-opacity duration-150',
-			sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100'
+			sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100',
 		]}
 	>
 		<div class="flex items-center gap-2 px-1">
@@ -320,7 +320,7 @@
 		'fixed top-4 left-4 z-40 hidden gap-2 transition-[opacity,transform] duration-200 ease-out md:flex',
 		sidebarCollapsed
 			? 'translate-x-0 opacity-100 delay-150'
-			: 'pointer-events-none -translate-x-2 opacity-0'
+			: 'pointer-events-none -translate-x-2 opacity-0',
 	]}
 >
 	<button
@@ -396,7 +396,7 @@
 	style="padding-left: var(--sidebar-w)"
 	class="mx-auto flex min-h-screen max-w-(--layout-width) pb-14 transition-[padding] duration-200 ease-out md:pb-0"
 >
-	<main class="mx-auto w-full max-w-5xl min-w-0 flex-1">
+	<main class="w-full max-w-[68rem] min-w-0 flex-1">
 		{@render children()}
 	</main>
 </div>

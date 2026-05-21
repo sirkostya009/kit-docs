@@ -4,6 +4,25 @@
 	const { data } = $props();
 	const title = $derived(data.metadata.title ? `${data.metadata.title} · kit-docs` : 'kit-docs');
 
+	const crumbs = $derived.by(() => {
+		const groupTitles = Object.fromEntries(
+			data.nav.groups.map((g) => [g.name, g.name.replace(/-/g, ' ')]),
+		);
+		const parts = data.slug.split('/');
+		const out: Array<{ label: string; href: string | null }> = [];
+		for (let i = 0; i < parts.length - 1; i++) {
+			const name = parts[i];
+			out.push({ label: groupTitles[name] ?? name, href: null });
+		}
+		return out;
+	});
+
+	const lastModifiedLabel = $derived.by(() => {
+		if (!data.lastModified) return null;
+		const d = new Date(data.lastModified);
+		return d.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+	});
+
 	let article = $state<HTMLElement>();
 	const active = new SvelteSet<string>();
 
@@ -32,6 +51,51 @@
 		compute();
 		return () => observer.disconnect();
 	});
+
+	$effect(() => {
+		void data.slug;
+		if (!article) return;
+		const copySvg =
+			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+		const checkSvg =
+			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>';
+		const pres = article.querySelectorAll<HTMLPreElement>('pre.shiki');
+		const cleanups: Array<() => void> = [];
+		for (const pre of pres) {
+			if (pre.querySelector('button.copy-code')) continue;
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'copy-code';
+			btn.setAttribute('aria-label', 'copy code');
+			btn.innerHTML = copySvg;
+			let timeout: ReturnType<typeof setTimeout> | null = null;
+			const onClick = async () => {
+				const code = pre.querySelector('code')?.innerText ?? pre.innerText;
+				try {
+					await navigator.clipboard.writeText(code);
+					btn.innerHTML = checkSvg;
+					btn.dataset.state = 'copied';
+					if (timeout) clearTimeout(timeout);
+					timeout = setTimeout(() => {
+						btn.innerHTML = copySvg;
+						delete btn.dataset.state;
+					}, 1500);
+				} catch {
+					btn.dataset.state = 'failed';
+				}
+			};
+			btn.addEventListener('click', onClick);
+			pre.appendChild(btn);
+			cleanups.push(() => {
+				if (timeout) clearTimeout(timeout);
+				btn.removeEventListener('click', onClick);
+				btn.remove();
+			});
+		}
+		return () => {
+			for (const fn of cleanups) fn();
+		};
+	});
 </script>
 
 <svelte:head>
@@ -40,14 +104,50 @@
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={data.metadata.description ?? ''} />
 	<meta property="og:type" content="article" />
+	{#if data.lastModified}
+		<meta property="article:modified_time" content={data.lastModified} />
+		<meta name="last-modified" content={data.lastModified} />
+	{/if}
 </svelte:head>
 
 <div class="flex min-w-0">
-	<div class="mx-auto max-w-3xl min-w-0 flex-1 px-4 py-8 md:px-12 md:py-12 lg:mx-0 lg:max-w-none">
+	<div class="mx-auto max-w-3xl min-w-0 flex-1 px-4 py-8 md:px-8 md:py-12 lg:mx-0 lg:max-w-none">
+		{#if crumbs.length > 0}
+			<nav
+				class="text-foreground-subtle mb-4 flex flex-wrap items-center gap-1.5 text-xs capitalize"
+				aria-label="breadcrumb"
+			>
+				<a href="/" class="hover:text-foreground no-underline transition-colors">Docs</a>
+				{#each crumbs as crumb (crumb.label)}
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="10"
+						height="10"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="m9 18 6-6-6-6" />
+					</svg>
+					<span>{crumb.label}</span>
+				{/each}
+			</nav>
+		{/if}
+
 		<article bind:this={article} class="prose max-w-none">
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html data.html}
 		</article>
+
+		{#if lastModifiedLabel}
+			<p class="text-foreground-subtle mt-12 text-xs">
+				Last updated on <time datetime={data.lastModified ?? ''}>{lastModifiedLabel}</time>
+			</p>
+		{/if}
 
 		{#if data.prev || data.next}
 			<nav
@@ -129,7 +229,7 @@
 									active.has(h.id)
 										? 'border-primary text-primary font-medium'
 										: 'text-foreground-muted hover:text-foreground border-transparent',
-									h.level === 3 ? 'pl-6' : 'pl-3'
+									h.level === 3 ? 'pl-6' : 'pl-3',
 								]}>{h.text}</a
 							>
 						</li>
@@ -397,5 +497,169 @@
 	:global(.prose th),
 	:global(.prose td) {
 		padding: 0.6rem 0.85rem;
+	}
+
+	:global(.prose .admonition) {
+		--admonition-color: var(--color-primary-500);
+		margin: 1.5rem 0;
+		padding: 0.75rem 1rem;
+		border-left: 3px solid var(--admonition-color);
+		background: color-mix(in oklab, var(--admonition-color) 10%, transparent);
+		border-radius: 0 0.375rem 0.375rem 0;
+	}
+
+	:global(.dark .prose .admonition) {
+		background: color-mix(in oklab, var(--admonition-color) 14%, transparent);
+	}
+
+	:global(.prose .admonition .admonition-title) {
+		margin: 0 0 0.35rem;
+		font-weight: 600;
+		font-size: 0.85rem;
+		text-transform: capitalize;
+		color: var(--admonition-color);
+		letter-spacing: 0.01em;
+	}
+
+	:global(.dark .prose .admonition .admonition-title) {
+		color: color-mix(in oklab, var(--admonition-color) 70%, white);
+	}
+
+	:global(.prose .admonition > :not(.admonition-title)) {
+		margin: 0.35rem 0;
+	}
+
+	:global(.prose .admonition > :last-child) {
+		margin-bottom: 0;
+	}
+
+	:global(.prose .admonition-note),
+	:global(.prose .admonition-info) {
+		--admonition-color: var(--color-primary-500);
+	}
+	:global(.prose .admonition-tip) {
+		--admonition-color: #16a34a;
+	}
+	:global(.prose .admonition-warning) {
+		--admonition-color: #d97706;
+	}
+	:global(.prose .admonition-caution) {
+		--admonition-color: #ea580c;
+	}
+	:global(.prose .admonition-danger) {
+		--admonition-color: #dc2626;
+	}
+
+	:global(.prose .shiki[data-title]) {
+		padding-top: 3rem !important;
+		position: relative;
+	}
+
+	:global(.prose .shiki[data-title])::before {
+		content: attr(data-title);
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2rem;
+		display: flex;
+		align-items: center;
+		padding: 0 1.25rem;
+		box-sizing: border-box;
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.72rem;
+		color: var(--foreground-muted);
+		background: var(--surface-overlay);
+		border-bottom: 1px solid var(--border-subtle);
+		border-radius: 0.5rem 0.5rem 0 0;
+	}
+
+	:global(.prose .shiki .line.highlighted) {
+		display: inline-block;
+		width: calc(100% + 2.5rem);
+		margin: 0 -1.25rem;
+		padding: 0 1.25rem;
+		background: color-mix(in oklab, var(--color-primary-500) 12%, transparent);
+		border-left: 2px solid var(--color-primary-500);
+		padding-left: calc(1.25rem - 2px);
+	}
+
+	:global(.prose .shiki .line.diff) {
+		display: inline-block;
+		width: calc(100% + 2.5rem);
+		margin: 0 -1.25rem;
+		padding: 0 1.25rem;
+		position: relative;
+	}
+
+	:global(.prose .shiki .line.diff.add) {
+		background: color-mix(in oklab, #16a34a 14%, transparent);
+	}
+
+	:global(.prose .shiki .line.diff.remove) {
+		background: color-mix(in oklab, #dc2626 16%, transparent);
+		opacity: 0.85;
+	}
+
+	:global(.prose .shiki .line.diff)::before {
+		position: absolute;
+		left: 0.4rem;
+		font-weight: 600;
+	}
+
+	:global(.prose .shiki .line.diff.add)::before {
+		content: '+';
+		color: #16a34a;
+	}
+
+	:global(.prose .shiki .line.diff.remove)::before {
+		content: '-';
+		color: #dc2626;
+	}
+
+	:global(.prose pre.shiki) {
+		position: relative;
+	}
+
+	:global(.prose pre.shiki > button.copy-code) {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 1.75rem;
+		height: 1.75rem;
+		color: var(--foreground-muted);
+		background: var(--surface-overlay);
+		border: 1px solid var(--border-subtle);
+		border-radius: 0.3rem;
+		cursor: pointer;
+		opacity: 0;
+		transition:
+			opacity 0.15s ease,
+			color 0.15s ease,
+			background-color 0.15s ease;
+	}
+
+	:global(.prose pre.shiki:hover > button.copy-code),
+	:global(.prose pre.shiki > button.copy-code:focus-visible) {
+		opacity: 1;
+	}
+
+	:global(.prose pre.shiki > button.copy-code:hover) {
+		color: var(--foreground);
+		background: var(--surface-raised);
+	}
+
+	:global(.prose pre.shiki > button.copy-code[data-state='copied']) {
+		color: #16a34a;
+		opacity: 1;
+	}
+
+	:global(.prose pre.shiki[data-title] > button.copy-code) {
+		top: 0.13rem;
+		width: 1.5rem;
+		height: 1.5rem;
 	}
 </style>

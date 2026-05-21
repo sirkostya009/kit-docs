@@ -9,6 +9,6 @@ export async function GET({ params }) {
 	const page = await getPage(params.slug);
 	if (!page) error(404);
 	return new Response(page.raw, {
-		headers: { 'content-type': 'text/markdown; charset=utf-8' }
+		headers: { 'content-type': 'text/markdown; charset=utf-8' },
 	});
 }

@@ -19,12 +19,12 @@ export async function GET() {
 				title: page.metadata.title ?? slug,
 				description: page.metadata.description ?? '',
 				headings: page.headings.map((h) => ({ id: h.id, text: h.text })),
-				content: text.slice(0, 8000)
+				content: text.slice(0, 8000),
 			};
-		})
+		}),
 	);
 
 	return Response.json(entries.filter(Boolean), {
-		headers: { 'content-type': 'application/json' }
+		headers: { 'content-type': 'application/json' },
 	});
 }

@@ -72,7 +72,7 @@ To bias results toward a particular section (for example, a "Reference" group sh
 ```typescript
 return {
 	...entry,
-	weight: slug.startsWith('reference/') ? 2 : 1
+	weight: slug.startsWith('reference/') ? 2 : 1,
 };
 ```
 

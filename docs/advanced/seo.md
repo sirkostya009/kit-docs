@@ -105,7 +105,7 @@ For docs that should appear as rich snippets, add a `<script type="application/l
 	'@type': 'TechArticle',
 	headline: data.metadata.title,
 	description: data.metadata.description,
-	dateModified: data.metadata.lastModified
+	dateModified: data.metadata.lastModified,
 })}</script>`}
 ```
 
