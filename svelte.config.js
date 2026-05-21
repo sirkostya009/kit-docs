@@ -4,17 +4,17 @@ import adapter from '@sveltejs/adapter-static';
 const config = {
 	kit: {
 		adapter: adapter({ precompress: true }),
-		prerender: { handleMissingId: 'warn' }
+		prerender: { handleMissingId: 'warn' },
 	},
 	vitePlugin: {
 		inspector: {
 			toggleKeyCombo: 'meta-shift',
 			holdMode: true,
 			showToggleButton: 'active',
-			toggleButtonPos: 'bottom-right'
-		}
+			toggleButtonPos: 'bottom-right',
+		},
 	},
-	compilerOptions: { experimental: { async: true } }
+	compilerOptions: { experimental: { async: true } },
 };
 
 export default config;
