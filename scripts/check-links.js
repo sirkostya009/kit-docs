@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // build-time broken link checker. invoked from `svelte.config.js` via an adapter
 // wrapper, so it runs as the final step of `vite build` and aborts the build on
 // any failure. exported as a function; can also be run standalone for debugging:

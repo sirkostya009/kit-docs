@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 // build-time frontmatter schema validator. invoked from `vite.config.ts` as a
 // vite plugin (buildStart) so the build aborts before prerender on any failure.
 // also runnable standalone for debugging:
