@@ -169,13 +169,17 @@ export async function getPage(slug: string) {
 	};
 }
 
-export type NavItem = { slug: string; title: string };
+export type NavItem = { slug: string; title: string; lastModified: string | null };
 export type NavTree = { top: NavItem[]; groups: { name: string; items: NavItem[] }[] };
 
 export const nav: NavItem[] = await Promise.all(
 	slugs.map(async ({ slug }) => {
 		const page = await getPage(slug);
-		return { slug, title: page?.metadata.title ?? slug };
+		return {
+			slug,
+			title: page?.metadata.title ?? slug,
+			lastModified: page?.lastModified ?? null,
+		};
 	}),
 );
 
