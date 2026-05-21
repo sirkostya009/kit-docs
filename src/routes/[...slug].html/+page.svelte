@@ -44,7 +44,13 @@
 
 	let article = $state<HTMLElement>();
 	let mobileTocOpen = $state(false);
+	let scrollProgress = $state(0);
 	const active = new SvelteSet<string>();
+	const activeHeading = $derived.by(() => {
+		let last: string | undefined;
+		for (const h of data.headings) if (active.has(h.id)) last = h.text;
+		return last;
+	});
 
 	$effect(() => {
 		void data.slug;
@@ -70,6 +76,28 @@
 		for (const h of headings) observer.observe(h);
 		compute();
 		return () => observer.disconnect();
+	});
+
+	$effect(() => {
+		void data.slug;
+		if (!article) return;
+		function update() {
+			const rect = article!.getBoundingClientRect();
+			const vh = window.innerHeight;
+			const range = rect.height - vh;
+			if (range <= 0) {
+				scrollProgress = rect.bottom <= vh ? 1 : 0;
+				return;
+			}
+			scrollProgress = Math.max(0, Math.min(1, -rect.top / range));
+		}
+		update();
+		window.addEventListener('scroll', update, { passive: true });
+		window.addEventListener('resize', update);
+		return () => {
+			window.removeEventListener('scroll', update);
+			window.removeEventListener('resize', update);
+		};
 	});
 
 	$effect(() => {
@@ -195,11 +223,43 @@
 		{#if data.headings.length > 0}
 			<details
 				bind:open={mobileTocOpen}
-				class="border-border-subtle bg-surface-raised mobile-toc mb-6 rounded-lg border lg:hidden"
+				class="border-border-subtle bg-surface-raised mobile-toc sticky top-2 z-10 mb-6 rounded-lg border lg:hidden"
 			>
 				<summary
-					class="text-foreground-muted hover:text-foreground flex cursor-pointer items-center gap-2 px-4 py-2.5 text-sm font-medium select-none"
+					class="text-foreground hover:text-foreground flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm font-medium select-none"
 				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						aria-hidden="true"
+						class="text-primary shrink-0"
+					>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							opacity="0.2"
+						/>
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-dasharray="62.832"
+							stroke-dashoffset={62.832 * (1 - scrollProgress)}
+							transform="rotate(-90 12 12)"
+							class="ring-progress"
+						/>
+					</svg>
+					<span class="flex-1 truncate text-left">{activeHeading ?? 'On this page'}</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="12"
@@ -211,11 +271,10 @@
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						aria-hidden="true"
-						class="chevron"
+						class="chevron text-foreground-subtle shrink-0"
 					>
 						<path d="m9 18 6-6-6-6" />
 					</svg>
-					On this page
 				</summary>
 				<ul class="border-border-subtle border-t px-4 py-2">
 					{#each data.headings as h (h.id)}
@@ -374,6 +433,42 @@
 
 	.mobile-toc[open] > summary .chevron {
 		transform: rotate(90deg);
+	}
+
+	.mobile-toc .ring-progress {
+		transition: stroke-dashoffset 0.15s ease;
+	}
+
+	.mobile-toc[open] > ul {
+		max-height: calc(100vh - 6rem);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
+	.mobile-toc {
+		interpolate-size: allow-keywords;
+	}
+
+	.mobile-toc::details-content {
+		opacity: 0;
+		block-size: 0;
+		overflow: clip;
+		transition:
+			opacity 0.2s ease,
+			block-size 0.2s ease,
+			content-visibility 0.2s allow-discrete;
+	}
+
+	.mobile-toc[open]::details-content {
+		opacity: 1;
+		block-size: auto;
+	}
+
+	@starting-style {
+		.mobile-toc[open]::details-content {
+			opacity: 0;
+			block-size: 0;
+		}
 	}
 
 	.prose {
