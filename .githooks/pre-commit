@@ -6,9 +6,22 @@ STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
 
 ESLINT_FILES=$(echo "$STAGED" | grep -E '\.(js|ts|svelte)$' || true)
 
+pnpm svelte-kit sync
 pnpm prettier --log-level=warn -u --write --no-error-on-unmatched-pattern --cache $STAGED
 git add $STAGED
 
-[ -n "$ESLINT_FILES" ] && pnpm eslint --cache --cache-location ./node_modules/.cache/eslint/ $ESLINT_FILES
+PIDS=
+if [ -n "$ESLINT_FILES" ]; then
+  pnpm eslint --cache --cache-location ./node_modules/.cache/eslint/ $ESLINT_FILES &
+  PIDS="$PIDS $!"
+fi
 
-pnpm check
+pnpm svelte-check --incremental --tsgo & PIDS="$PIDS $!"
+./scripts/check-links.js & PIDS="$PIDS $!"
+./scripts/check-frontmatter.js & PIDS="$PIDS $!"
+
+STATUS=0
+for pid in $PIDS; do
+  wait "$pid" || STATUS=$?
+done
+exit $STATUS
