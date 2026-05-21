@@ -396,7 +396,7 @@
 	style="padding-left: var(--sidebar-w)"
 	class="mx-auto flex min-h-screen max-w-(--layout-width) pb-14 transition-[padding] duration-200 ease-out md:pb-0"
 >
-	<main class="w-full max-w-[68rem] min-w-0 flex-1">
+	<main class="w-full max-w-272 min-w-0 flex-1">
 		{@render children()}
 	</main>
 </div>

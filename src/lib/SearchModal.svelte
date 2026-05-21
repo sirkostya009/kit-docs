@@ -1,31 +1,74 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import MiniSearch, { type SearchResult } from 'minisearch';
 
 	type Heading = { id: string; text: string };
-	type Doc = {
+	type Stored = {
 		slug: string;
+		section: string;
 		title: string;
 		description: string;
 		headings: Heading[];
 		content: string;
 	};
-	type Result = Doc & { score: number; snippet: string; matchedHeading?: Heading };
+	type Result = SearchResult & Stored & { snippet: string; matchedHeading?: Heading };
+
+	const MINI_OPTIONS = {
+		idField: 'id',
+		fields: ['title', 'headingsText', 'description', 'content'],
+		storeFields: ['slug', 'section', 'title', 'description', 'headings', 'content'],
+	};
+	const RECENT_KEY = 'kit-docs:recent-searches';
+	const RECENT_MAX = 5;
+	const CLOSE_MS = 70;
 
 	let { open = $bindable(false) } = $props();
 
 	let query = $state('');
-	let index = $state<Doc[]>();
+	let mini = $state<MiniSearch>();
+	let sections = $state<string[]>([]);
+	let activeSection = $state<string | null>(null);
+	let recent = $state<string[]>([]);
 	let selected = $state(0);
 	let input = $state<HTMLInputElement>();
 	let dialog = $state<HTMLDialogElement>();
 	let closing = $state(false);
 
-	const CLOSE_MS = 70;
-
 	async function loadIndex() {
-		if (index) return;
+		if (mini) return;
 		const res = await fetch('/search-index.json');
-		index = await res.json();
+		const data = await res.json();
+		sections = data.sections;
+		mini = MiniSearch.loadJS(data.index, MINI_OPTIONS);
+	}
+
+	function loadRecent() {
+		try {
+			const raw = localStorage.getItem(RECENT_KEY);
+			if (raw) recent = JSON.parse(raw).slice(0, RECENT_MAX);
+		} catch {
+			recent = [];
+		}
+	}
+
+	function pushRecent(q: string) {
+		const trimmed = q.trim();
+		if (!trimmed) return;
+		recent = [trimmed, ...recent.filter((r) => r !== trimmed)].slice(0, RECENT_MAX);
+		try {
+			localStorage.setItem(RECENT_KEY, JSON.stringify(recent));
+		} catch {
+			// ignore
+		}
+	}
+
+	function clearRecent() {
+		recent = [];
+		try {
+			localStorage.removeItem(RECENT_KEY);
+		} catch {
+			// ignore
+		}
 	}
 
 	$effect(() => {
@@ -34,6 +77,7 @@
 			closing = false;
 			dialog.showModal();
 			loadIndex();
+			loadRecent();
 			queueMicrotask(() => input?.focus());
 		} else if (!open && dialog.open && !closing) {
 			closing = true;
@@ -42,6 +86,7 @@
 				closing = false;
 				query = '';
 				selected = 0;
+				activeSection = null;
 			}, CLOSE_MS);
 		}
 	});
@@ -55,73 +100,78 @@
 		if (e.target === dialog) open = false;
 	}
 
-	const results = $derived.by(() => {
-		if (!index) return [];
-		const q = query.toLowerCase().trim();
+	const results = $derived.by<Result[]>(() => {
+		if (!mini) return [];
+		const q = query.trim();
 		if (!q) return [];
-		const terms = q.split(/\s+/);
-		const out: Result[] = [];
-		for (const doc of index) {
-			let score = 0;
-			const title = doc.title.toLowerCase();
-			const content = doc.content.toLowerCase();
-			let bestHeading: Heading | undefined;
-			let bestHeadingScore = 0;
+		const raw = mini.search(q, {
+			fuzzy: 0.2,
+			prefix: true,
+			boost: { title: 3, headingsText: 2 },
+			filter: activeSection ? (r) => r.section === activeSection : undefined,
+		}) as Array<SearchResult & Stored>;
+
+		return raw.slice(0, 10).map((r) => {
+			const terms: string[] = (r.terms ?? []).map((t: string) => t.toLowerCase());
+			const lowerContent = r.content.toLowerCase();
 			let snippetIdx = -1;
-
 			for (const t of terms) {
-				if (title.includes(t)) score += 100;
-				if (title.startsWith(t)) score += 30;
-
-				for (const h of doc.headings) {
-					const hl = h.text.toLowerCase();
-					if (hl.includes(t)) {
-						score += 40;
-						if (40 > bestHeadingScore) {
-							bestHeadingScore = 40;
-							bestHeading = h;
-						}
-					}
-				}
-
-				const idx = content.indexOf(t);
+				const idx = lowerContent.indexOf(t);
 				if (idx >= 0) {
-					score += 10;
-					if (snippetIdx < 0) snippetIdx = idx;
+					snippetIdx = idx;
+					break;
+				}
+			}
+			const snippet =
+				snippetIdx >= 0
+					? r.content.slice(Math.max(0, snippetIdx - 40), snippetIdx + 80)
+					: r.description;
+
+			let matchedHeading: Heading | undefined;
+			for (const h of r.headings) {
+				const hl = h.text.toLowerCase();
+				if (terms.some((t) => hl.includes(t))) {
+					matchedHeading = h;
+					break;
 				}
 			}
 
-			if (score > 0) {
-				const snippet =
-					snippetIdx >= 0
-						? doc.content.slice(Math.max(0, snippetIdx - 40), snippetIdx + 80)
-						: doc.description;
-				out.push({ ...doc, score, snippet, matchedHeading: bestHeading });
-			}
-		}
-		return out.sort((a, b) => b.score - a.score).slice(0, 10);
+			return { ...r, snippet, matchedHeading };
+		});
 	});
 
 	function resultHref(r: Result) {
 		return r.matchedHeading ? `/${r.slug}.html#${r.matchedHeading.id}` : `/${r.slug}.html`;
 	}
 
-	function go(href: string) {
+	function go(href: string, q?: string) {
+		if (q !== undefined) pushRecent(q);
 		open = false;
 		goto(href);
 	}
 
+	const showingRecent = $derived(!query.trim() && recent.length > 0);
+	const navLength = $derived(showingRecent ? recent.length : results.length);
+
 	function onKey(e: KeyboardEvent) {
 		if (e.key === 'ArrowDown') {
 			e.preventDefault();
-			selected = Math.min(selected + 1, results.length - 1);
+			selected = Math.min(selected + 1, navLength - 1);
 		} else if (e.key === 'ArrowUp') {
 			e.preventDefault();
 			selected = Math.max(selected - 1, 0);
 		} else if (e.key === 'Enter') {
 			e.preventDefault();
-			const r = results[selected];
-			if (r) go(resultHref(r));
+			if (showingRecent) {
+				const q = recent[selected];
+				if (q) {
+					query = q;
+					selected = 0;
+				}
+			} else {
+				const r = results[selected];
+				if (r) go(resultHref(r), query);
+			}
 		}
 	}
 
@@ -183,11 +233,105 @@
 		>
 	</div>
 
+	{#if sections.length > 0 && query.trim()}
+		<div
+			class="border-border-subtle flex flex-wrap items-center gap-1.5 border-b px-4 py-2"
+			role="tablist"
+			aria-label="Filter by section"
+		>
+			<button
+				type="button"
+				role="tab"
+				aria-selected={activeSection === null}
+				onclick={() => {
+					activeSection = null;
+					selected = 0;
+				}}
+				class={[
+					'rounded-full border px-2.5 py-0.5 text-xs transition-colors',
+					activeSection === null
+						? 'border-primary bg-primary-subtle text-primary'
+						: 'border-border text-foreground-muted hover:bg-surface-overlay',
+				]}>All</button
+			>
+			{#each sections as s (s)}
+				<button
+					type="button"
+					role="tab"
+					aria-selected={activeSection === s}
+					onclick={() => {
+						activeSection = s;
+						selected = 0;
+					}}
+					class={[
+						'rounded-full border px-2.5 py-0.5 text-xs capitalize transition-colors',
+						activeSection === s
+							? 'border-primary bg-primary-subtle text-primary'
+							: 'border-border text-foreground-muted hover:bg-surface-overlay',
+					]}>{s.replace(/-/g, ' ')}</button
+				>
+			{/each}
+		</div>
+	{/if}
+
 	<div class="max-h-[60vh] overflow-y-auto p-2">
-		{#if !index}
+		{#if !mini}
 			<p class="text-foreground-subtle px-3 py-6 text-center text-sm">Loading…</p>
 		{:else if !query.trim()}
-			<p class="text-foreground-subtle px-3 py-6 text-center text-sm">Start typing to search.</p>
+			{#if recent.length > 0}
+				<div class="flex items-center justify-between px-3 pt-2 pb-1">
+					<span class="text-foreground-subtle text-xs font-medium tracking-wide uppercase"
+						>Recent</span
+					>
+					<button
+						type="button"
+						onclick={clearRecent}
+						class="text-foreground-subtle hover:text-foreground text-xs underline-offset-2 hover:underline"
+						>Clear</button
+					>
+				</div>
+				<ul class="flex flex-col gap-0.5" role="listbox">
+					{#each recent as q, i (q + i)}
+						<li>
+							<button
+								type="button"
+								onclick={() => {
+									query = q;
+									selected = 0;
+									input?.focus();
+								}}
+								onmouseenter={() => (selected = i)}
+								aria-selected={selected === i}
+								role="option"
+								class={[
+									'flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors',
+									selected === i
+										? 'bg-primary-subtle text-primary'
+										: 'text-foreground hover:bg-surface-overlay',
+								]}
+							>
+								<svg
+									xmlns="http://www.w3.org/2000/svg"
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									class="text-foreground-subtle shrink-0"
+									aria-hidden="true"
+									><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg
+								>
+								<span class="truncate">{q}</span>
+							</button>
+						</li>
+					{/each}
+				</ul>
+			{:else}
+				<p class="text-foreground-subtle px-3 py-6 text-center text-sm">Start typing to search.</p>
+			{/if}
 		{:else if results.length === 0}
 			<p class="text-foreground-subtle px-3 py-6 text-center text-sm">
 				No results for &quot;{query}&quot;.
@@ -200,7 +344,7 @@
 							href={resultHref(r)}
 							onclick={(e) => {
 								e.preventDefault();
-								go(resultHref(r));
+								go(resultHref(r), query);
 							}}
 							onmouseenter={() => (selected = i)}
 							class={[
@@ -217,11 +361,16 @@
 								{@html highlight(r.title, query)}
 								{#if r.matchedHeading}
 									<span class="text-foreground-subtle text-xs">›</span>
-									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 									<span class="text-foreground-muted text-xs">
 										<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 										{@html highlight(r.matchedHeading.text, query)}
 									</span>
+								{/if}
+								{#if r.section}
+									<span
+										class="text-foreground-subtle border-border ml-auto rounded border px-1.5 py-0.5 text-[0.65rem] capitalize"
+										>{r.section.replace(/-/g, ' ')}</span
+									>
 								{/if}
 							</div>
 							{#if r.snippet}
@@ -235,6 +384,24 @@
 				{/each}
 			</ul>
 		{/if}
+	</div>
+
+	<div
+		class="border-border-subtle text-foreground-subtle hidden items-center gap-4 border-t px-4 py-2 text-[0.65rem] sm:flex"
+	>
+		<span class="flex items-center gap-1">
+			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">↵</kbd>
+			to open
+		</span>
+		<span class="flex items-center gap-1">
+			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">↑</kbd>
+			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">↓</kbd>
+			to navigate
+		</span>
+		<span class="flex items-center gap-1">
+			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">Esc</kbd>
+			to close
+		</span>
 	</div>
 </dialog>
 
