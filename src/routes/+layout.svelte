@@ -3,12 +3,12 @@
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import { announcement } from '$lib/config';
+	import { partition, type NavNode } from '$lib/nav';
 	import SearchModal from '$lib/SearchModal.svelte';
-	import type { NavNode } from '$lib/server/content';
 	import '../app.css';
 
 	let { data, children } = $props();
-	const { nav } = $derived(data);
+	const tree = $derived(partition(data.nav));
 
 	function walkGroups(nodes: NavNode[], fn: (prefix: string) => void) {
 		for (const n of nodes) {
@@ -21,13 +21,13 @@
 
 	const openGroups = $state<Record<string, boolean>>({});
 	// svelte-ignore state_referenced_locally
-	walkGroups(nav.groups, (prefix) => {
+	walkGroups(tree.groups, (prefix) => {
 		openGroups[prefix] = page.url.pathname.startsWith(`/${prefix}/`);
 	});
 
 	$effect(() => {
 		const path = page.url.pathname;
-		walkGroups(nav.groups, (prefix) => {
+		walkGroups(tree.groups, (prefix) => {
 			if (path.startsWith(`/${prefix}/`)) openGroups[prefix] = true;
 		});
 	});
@@ -158,10 +158,10 @@
 {/snippet}
 
 {#snippet navTree(onclick?: () => void)}
-	{#each nav.top as item (item.slug)}
+	{#each tree.top as item (item.slug)}
 		{@render navLink(item, onclick)}
 	{/each}
-	{#each nav.groups as group (group.prefix)}
+	{#each tree.groups as group (group.prefix)}
 		<details class="nav-group mt-4" bind:open={openGroups[group.prefix]}>
 			<summary
 				class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay mb-1 flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 font-bold capitalize transition-colors select-none md:px-3 md:py-1.5 md:text-sm"

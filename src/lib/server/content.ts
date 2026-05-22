@@ -36,8 +36,6 @@ const entries: Entry[] = Object.keys(rawFiles)
 		return { slug, key, path };
 	});
 
-const slugToEntry = new Map(entries.map((e) => [e.slug, e]));
-
 export const slugs = entries.map(({ slug }) => ({ slug }));
 
 const ADMONITION_NAMES = new Set(['note', 'tip', 'info', 'warning', 'caution', 'danger']);
@@ -320,28 +318,27 @@ function extractHeadings(raw: string): Heading[] {
 	return out;
 }
 
-const lastModifiedCache = new Map<string, string | null>();
-
 function gitLastModified(relPath: string): string | null {
-	if (lastModifiedCache.has(relPath)) return lastModifiedCache.get(relPath)!;
-	let value: string | null;
 	try {
 		const path = resolvePath(process.cwd(), 'docs', relPath);
 		const out = execSync(`git log -1 --format=%cI -- "${path}"`, {
 			encoding: 'utf8',
 			stdio: ['ignore', 'pipe', 'ignore'],
 		}).trim();
-		value = out || null;
+		return out || null;
 	} catch {
-		value = null;
+		return null;
 	}
-	lastModifiedCache.set(relPath, value);
-	return value;
 }
 
-export async function getPage(slug: string) {
-	const entry = slugToEntry.get(slug);
-	if (!entry) return null;
+export type Page = {
+	html: string;
+	metadata: Record<string, string>;
+	raw: string;
+	headings: Heading[];
+};
+
+async function loadPage(entry: Entry): Promise<Page> {
 	const raw = (await rawFiles[entry.key]()) as string;
 	const { data: metadata, content } = matter(raw);
 	const html = String(await processor.process(content));
@@ -350,47 +347,20 @@ export async function getPage(slug: string) {
 		metadata: metadata as Record<string, string>,
 		raw,
 		headings: extractHeadings(content),
-		lastModified: (metadata.lastModified as string | undefined) ?? gitLastModified(entry.path),
 	};
 }
 
-export type NavItem = { slug: string; title: string; lastModified: string | null };
-export type NavLeaf = { kind: 'leaf' } & NavItem;
-export type NavGroup = { kind: 'group'; name: string; prefix: string; children: NavNode[] };
-export type NavNode = NavLeaf | NavGroup;
-export type NavTree = { top: NavLeaf[]; groups: NavGroup[] };
-
-export const nav: NavItem[] = await Promise.all(
-	slugs.map(async ({ slug }) => {
-		const page = await getPage(slug);
-		return {
-			slug,
-			title: page?.metadata.title ?? slug,
-			lastModified: page?.lastModified ?? null,
-		};
-	}),
+export const pages = new Map<string, Page>(
+	await Promise.all(entries.map(async (e) => [e.slug, await loadPage(e)] as const)),
 );
 
-function partition(items: NavItem[], depth: number, parentPrefix: string): NavTree {
-	const top: NavLeaf[] = [];
-	const buckets = new Map<string, NavItem[]>();
-	for (const item of items) {
-		const parts = item.slug.split('/');
-		if (parts.length === depth + 1) {
-			top.push({ kind: 'leaf', ...item });
-		} else {
-			const name = parts[depth];
-			const bucket = buckets.get(name) ?? [];
-			bucket.push(item);
-			buckets.set(name, bucket);
-		}
-	}
-	const groups: NavGroup[] = [...buckets].map(([name, items]) => {
-		const prefix = parentPrefix ? `${parentPrefix}/${name}` : name;
-		const sub = partition(items, depth + 1, prefix);
-		return { kind: 'group', name, prefix, children: [...sub.top, ...sub.groups] };
-	});
-	return { top, groups };
-}
+export const lastModified = new Map<string, string | null>(
+	entries.map((e) => [
+		e.slug,
+		(pages.get(e.slug)?.metadata.lastModified as string | undefined) ?? gitLastModified(e.path),
+	]),
+);
 
-export const navTree: NavTree = partition(nav, 0, '');
+export const nav: Record<string, string> = Object.fromEntries(
+	entries.entries().map(([, { slug }]) => [slug, pages.get(slug)?.metadata.title ?? slug]),
+);

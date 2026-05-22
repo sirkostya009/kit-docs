@@ -2,11 +2,22 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import './prose.css';
 
-	const { data } = $props();
+	const { data, params } = $props();
+
+	const navSlugs = $derived(Object.keys(data.nav));
+	const navIdx = $derived(navSlugs.indexOf(params.slug));
+	const prev = $derived(
+		navIdx > 0 ? { slug: navSlugs[navIdx - 1], title: data.nav[navSlugs[navIdx - 1]] } : null,
+	);
+	const next = $derived(
+		navIdx >= 0 && navIdx < navSlugs.length - 1
+			? { slug: navSlugs[navIdx + 1], title: data.nav[navSlugs[navIdx + 1]] }
+			: null,
+	);
 	const pageTitle = $derived(data.metadata.title ?? 'kit-docs');
 	const title = $derived(data.metadata.title ? `${data.metadata.title} · kit-docs` : 'kit-docs');
 	const description = $derived(data.metadata.description ?? '');
-	const canonicalUrl = $derived(`${data.origin}/${data.slug}.html`);
+	const canonicalUrl = $derived(`${data.origin}/${params.slug}.html`);
 	const ldScript = $derived(
 		'<script type="application/ld+json">' +
 			JSON.stringify({
@@ -25,7 +36,7 @@
 	);
 
 	const crumbs = $derived(
-		data.slug.split('/').map((name: string) => ({
+		params.slug.split('/').map((name: string) => ({
 			label: name.replace(/-/g, ' '),
 			href: null,
 		})),
@@ -62,7 +73,7 @@
 	);
 
 	$effect(() => {
-		void data.slug;
+		void params.slug;
 		if (!article) return;
 		type Item = {
 			id: string;
@@ -120,7 +131,7 @@
 	});
 
 	$effect(() => {
-		void data.slug;
+		void params.slug;
 		if (!article) return;
 		function update() {
 			const rect = article!.getBoundingClientRect();
@@ -142,7 +153,7 @@
 	});
 
 	$effect(() => {
-		void data.slug;
+		void params.slug;
 		if (!article) return;
 		const copySvg =
 			'<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
@@ -206,7 +217,7 @@
 	});
 
 	$effect(() => {
-		void data.slug;
+		void params.slug;
 		if (!article) return;
 		const containers = [...article.querySelectorAll<HTMLElement>('.tabs')];
 		if (containers.length === 0) return;
@@ -298,7 +309,7 @@
 <svelte:head>
 	<title>{title}</title>
 	<link rel="canonical" href={canonicalUrl} />
-	<link rel="alternate" type="text/markdown" href="/{data.slug}.md" />
+	<link rel="alternate" type="text/markdown" href="/{params.slug}.md" />
 	{#if description}
 		<meta name="description" content={description} />
 	{/if}
@@ -442,14 +453,14 @@
 			</p>
 		{/if}
 
-		{#if data.prev || data.next}
+		{#if prev || next}
 			<nav
 				class="border-border-subtle mt-16 grid grid-cols-1 gap-3 border-t pt-8 sm:grid-cols-2"
 				aria-label="page navigation"
 			>
-				{#if data.prev}
+				{#if prev}
 					<a
-						href="/{data.prev.slug}.html"
+						href="/{prev.slug}.html"
 						class="group border-border bg-surface-raised hover:border-primary/40 flex flex-col rounded-lg border p-4 no-underline transition-colors"
 					>
 						<span class="text-foreground-subtle inline-flex items-center gap-1 text-xs">
@@ -469,15 +480,15 @@
 						</span>
 						<span
 							class="text-foreground group-hover:text-primary mt-1 font-medium transition-colors"
-							>{data.prev.title}</span
+							>{prev.title}</span
 						>
 					</a>
 				{:else}
 					<div></div>
 				{/if}
-				{#if data.next}
+				{#if next}
 					<a
-						href="/{data.next.slug}.html"
+						href="/{next.slug}.html"
 						class="group border-border bg-surface-raised hover:border-primary/40 flex flex-col items-end rounded-lg border p-4 text-right no-underline transition-colors"
 					>
 						<span class="text-foreground-subtle inline-flex items-center gap-1 text-xs">
@@ -497,7 +508,7 @@
 						</span>
 						<span
 							class="text-foreground group-hover:text-primary mt-1 font-medium transition-colors"
-							>{data.next.title}</span
+							>{next.title}</span
 						>
 					</a>
 				{/if}
@@ -530,7 +541,7 @@
 				</ul>
 			{/if}
 			<a
-				href="/{data.slug}.md"
+				href="/{params.slug}.md"
 				data-sveltekit-reload
 				class="text-foreground-muted hover:text-foreground inline-flex items-center gap-1.5 text-sm no-underline transition-colors"
 			>

@@ -1,4 +1,4 @@
-import { nav } from '$lib/server/content';
+import { lastModified, nav } from '$lib/server/content';
 import { origin } from '$lib/server/origin';
 
 export const prerender = true;
@@ -6,10 +6,10 @@ export const prerender = true;
 export function GET() {
 	const pages = [
 		{ path: '/', priority: '1.0', lastModified: null as string | null },
-		...nav.map(({ slug, lastModified }) => ({
+		...Object.keys(nav).map((slug) => ({
 			path: `/${slug}.html`,
 			priority: '0.8',
-			lastModified,
+			lastModified: lastModified.get(slug) ?? null,
 		})),
 	];
 
