@@ -5,7 +5,7 @@ description: A stress test of markdown rendering with complex nested structures.
 
 # Markdown Showcase
 
-A stress test of every markdown feature worth caring about.[^1]
+###### A stress test of every markdown feature worth caring about.[^1]
 
 [^1]: Some features require remark plugins — footnotes use `remark-footnotes@2`.
 
