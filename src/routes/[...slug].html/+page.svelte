@@ -38,6 +38,18 @@
 				day: 'numeric',
 			}),
 	);
+	const lastModifiedTitle = $derived(
+		data.lastModified &&
+			new Date(data.lastModified).toLocaleString(undefined, {
+				weekday: 'long',
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+				hour: '2-digit',
+				minute: '2-digit',
+				timeZoneName: 'short',
+			}),
+	);
 
 	let article = $state<HTMLElement>();
 	let mobileTocOpen = $state(false);
@@ -421,7 +433,9 @@
 
 		{#if lastModifiedLabel}
 			<p class="text-foreground-subtle mt-12 text-xs">
-				Last updated on <time datetime={data.lastModified ?? ''}>{lastModifiedLabel}</time>
+				Last updated on <time datetime={data.lastModified} title={lastModifiedTitle}
+					>{lastModifiedLabel}</time
+				>
 			</p>
 		{/if}
 
