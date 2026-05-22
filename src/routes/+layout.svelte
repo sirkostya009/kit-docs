@@ -202,121 +202,69 @@
 	</a>
 {/snippet}
 
-{#snippet searchTrigger()}
+{#snippet themeButton()}
 	<button
-		type="button"
-		onclick={() => (searchOpen = true)}
-		class="border-border bg-surface-raised text-foreground-subtle hover:bg-surface-overlay flex h-11 w-full cursor-text items-center gap-2 rounded-md border pr-2 pl-3 transition-colors md:h-9 md:text-sm"
+		class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+		onclick={cycleTheme}
+		aria-label="toggle theme ({theme})"
 	>
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			width="14"
-			height="14"
-			viewBox="0 0 24 24"
-			fill="none"
-			stroke="currentColor"
-			stroke-width="2"
-			stroke-linecap="round"
-			stroke-linejoin="round"
-			aria-hidden="true"
-			><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg
-		>
-		<span class="flex-1 text-start">Search</span>
-		<kbd
-			class="border-border bg-surface text-foreground-subtle rounded border px-1.5 py-0.5 font-mono text-[0.65rem]"
-			>{modKey} K</kbd
-		>
-	</button>
-{/snippet}
-
-{#snippet chromeRow()}
-	<div
-		class="border-border bg-surface-raised text-foreground-muted flex items-center rounded-lg border p-0.5"
-	>
-		<a
-			href="https://github.com/sirkostya009/kit-docs"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 items-center justify-center rounded-md transition-colors"
-			aria-label="GitHub"
-		>
+		{#if theme === 'system'}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				width="18"
-				height="18"
+				width="16"
+				height="16"
 				viewBox="0 0 24 24"
-				fill="currentColor"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
 				aria-hidden="true"
 			>
-				<path
-					d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
-				/>
+				<rect x="2" y="3" width="20" height="14" rx="2" />
+				<line x1="8" y1="21" x2="16" y2="21" />
+				<line x1="12" y1="17" x2="12" y2="21" />
 			</svg>
-		</a>
-		<div class="border-border ml-auto h-5 self-center border-l"></div>
-		<button
-			class="hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
-			onclick={cycleTheme}
-			aria-label="toggle theme ({theme})"
-		>
-			{#if theme === 'system'}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<rect x="2" y="3" width="20" height="14" rx="2" />
-					<line x1="8" y1="21" x2="16" y2="21" />
-					<line x1="12" y1="17" x2="12" y2="21" />
-				</svg>
-			{:else if theme === 'dark'}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-				</svg>
-			{:else}
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<circle cx="12" cy="12" r="5" />
-					<line x1="12" y1="1" x2="12" y2="3" />
-					<line x1="12" y1="21" x2="12" y2="23" />
-					<line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-					<line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-					<line x1="1" y1="12" x2="3" y2="12" />
-					<line x1="21" y1="12" x2="23" y2="12" />
-					<line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-					<line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-				</svg>
-			{/if}
-		</button>
-	</div>
+		{:else if theme === 'dark'}
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+			</svg>
+		{:else}
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<circle cx="12" cy="12" r="5" />
+				<line x1="12" y1="1" x2="12" y2="3" />
+				<line x1="12" y1="21" x2="12" y2="23" />
+				<line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+				<line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+				<line x1="1" y1="12" x2="3" y2="12" />
+				<line x1="21" y1="12" x2="23" y2="12" />
+				<line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+				<line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+			</svg>
+		{/if}
+	</button>
 {/snippet}
 
 <svelte:head>
@@ -394,7 +342,30 @@
 			</svg>
 		</button>
 		{@render logo()}
-		<div class="flex-1"></div>
+		<div class="ml-auto flex items-center gap-1">
+			<button
+				class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+				onclick={() => (searchOpen = true)}
+				aria-label="search"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<circle cx="11" cy="11" r="8" />
+					<line x1="21" y1="21" x2="16.65" y2="16.65" />
+				</svg>
+			</button>
+			{@render themeButton()}
+		</div>
 	</div>
 </header>
 
@@ -433,7 +404,30 @@
 				</svg>
 			</button>
 		</div>
-		{@render searchTrigger()}
+		<button
+			type="button"
+			onclick={() => (searchOpen = true)}
+			class="border-border bg-surface-raised text-foreground-subtle hover:bg-surface-overlay flex h-11 w-full cursor-text items-center gap-2 rounded-md border pr-2 pl-3 transition-colors md:h-9 md:text-sm"
+		>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+				><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg
+			>
+			<span class="flex-1 text-start">Search</span>
+			<kbd
+				class="border-border bg-surface text-foreground-subtle rounded border px-1.5 py-0.5 font-mono text-[0.65rem]"
+				>{modKey} K</kbd
+			>
+		</button>
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
 			<p
 				class="text-foreground-subtle mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
@@ -442,13 +436,38 @@
 			</p>
 			{@render navTree()}
 		</nav>
-		{@render chromeRow()}
+		<div
+			class="border-border bg-surface-raised text-foreground-muted flex items-center rounded-lg border p-0.5"
+		>
+			<a
+				href="https://github.com/sirkostya009/kit-docs"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+				aria-label="GitHub"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					aria-hidden="true"
+				>
+					<path
+						d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"
+					/>
+				</svg>
+			</a>
+			<div class="border-border ml-auto h-5 self-center border-l"></div>
+			{@render themeButton()}
+		</div>
 	</div>
 </aside>
 
 <div
 	class={[
-		'fixed top-[calc(var(--announce-h))+1rem] left-4 z-40 hidden gap-2 transition-[opacity,transform] duration-200 ease-out md:flex',
+		'fixed top-[calc(var(--announce-h)+1rem)] left-4 z-40 hidden gap-2 transition-[opacity,transform] duration-200 ease-out md:flex',
 		sidebarCollapsed
 			? 'translate-x-0 opacity-100 delay-150'
 			: 'pointer-events-none -translate-x-2 opacity-0',
@@ -505,7 +524,6 @@
 	<aside
 		class="bg-surface fixed top-(--announce-h) right-0 bottom-14 left-0 z-50 flex flex-col gap-3 overflow-y-auto p-4 md:hidden"
 	>
-		{@render searchTrigger()}
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
 			<p
 				class="text-foreground-subtle mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
@@ -514,7 +532,6 @@
 			</p>
 			{@render navTree(() => (sidebarOpen = false))}
 		</nav>
-		{@render chromeRow()}
 	</aside>
 {/if}
 
