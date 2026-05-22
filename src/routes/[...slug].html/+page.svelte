@@ -42,39 +42,68 @@
 	let article = $state<HTMLElement>();
 	let mobileTocOpen = $state(false);
 	let scrollProgress = $state(0);
+	let currentSection = $state<string | null>(null);
 	const active = new SvelteSet<string>();
-	const activeHeadings = $derived(
-		data.headings.filter((h) => active.has(h?.id)).map((h) => h.text),
+	const currentSectionTitle = $derived(
+		data.headings.find((h) => h.id === currentSection)?.text ?? null,
 	);
 
 	$effect(() => {
 		void data.slug;
 		if (!article) return;
-		const headings = [...article.querySelectorAll<HTMLElement>('h2[id], h3[id]')];
-		if (headings.length === 0) return;
+		type Item = {
+			id: string;
+			level: 2 | 3;
+			el: HTMLElement;
+			sectionEl: HTMLElement | null;
+		};
+		const items: Item[] = data.headings
+			.map((h): Item | null => {
+				const trackId = h.level === 2 ? `${h.id}-heading` : h.id;
+				const el = article!.querySelector<HTMLElement>(`[id="${trackId}"]`);
+				if (!el) return null;
+				const sectionEl =
+					h.level === 2 ? article!.querySelector<HTMLElement>(`[id="${h.id}"]`) : null;
+				return { id: h.id, level: h.level, el, sectionEl };
+			})
+			.filter((it): it is Item => it !== null);
+		if (items.length === 0) return;
 
 		function compute() {
 			const vh = window.innerHeight;
 			const minOverlap = vh * 0.2;
 			const articleBottom = article!.getBoundingClientRect().bottom;
 			const visible: string[] = [];
-			for (let i = 0; i < headings.length; i++) {
-				const top = headings[i].getBoundingClientRect().top;
+			for (let i = 0; i < items.length; i++) {
+				const top = items[i].el.getBoundingClientRect().top;
 				const bottom =
-					i + 1 < headings.length ? headings[i + 1].getBoundingClientRect().top : articleBottom;
+					i + 1 < items.length ? items[i + 1].el.getBoundingClientRect().top : articleBottom;
 				const overlap = Math.max(0, Math.min(bottom, vh) - Math.max(top, 0));
 				const sectionHeight = bottom - top;
 				if (overlap >= minOverlap || (sectionHeight > 0 && overlap >= sectionHeight * 0.5))
-					visible.push(headings[i].id);
+					visible.push(items[i].id);
 			}
 			for (const id of active) if (!visible.includes(id)) active.delete(id);
 			for (const id of visible) active.add(id);
+
+			for (const it of items) {
+				if (it.level !== 2 || !it.sectionEl) continue;
+				const r = it.sectionEl.getBoundingClientRect();
+				if (r.top <= vh * 0.3) currentSection = it.id;
+				else break;
+			}
 		}
 
 		const observer = new IntersectionObserver(compute, { rootMargin: '0px' });
-		for (const h of headings) observer.observe(h);
+		for (const it of items) observer.observe(it.el);
 		compute();
-		return () => observer.disconnect();
+		window.addEventListener('scroll', compute, { passive: true });
+		window.addEventListener('resize', compute);
+		return () => {
+			observer.disconnect();
+			window.removeEventListener('scroll', compute);
+			window.removeEventListener('resize', compute);
+		};
 	});
 
 	$effect(() => {
@@ -347,9 +376,7 @@
 							class="ring-progress"
 						/>
 					</svg>
-					<span class="flex-1 truncate text-left"
-						>{activeHeadings.length > 0 ? activeHeadings.join(', ') : 'On this page'}</span
-					>
+					<span class="flex-1 truncate text-left">{currentSectionTitle ?? 'On this page'}</span>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
 						width="12"
