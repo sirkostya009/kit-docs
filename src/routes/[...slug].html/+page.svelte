@@ -162,6 +162,95 @@
 			for (const fn of cleanups) fn();
 		};
 	});
+
+	$effect(() => {
+		void data.slug;
+		if (!article) return;
+		const containers = [...article.querySelectorAll<HTMLElement>('.tabs')];
+		if (containers.length === 0) return;
+		const cleanups: Array<() => void> = [];
+
+		function selectIndex(container: HTMLElement, idx: number) {
+			const buttons = [
+				...container.querySelectorAll<HTMLButtonElement>(':scope > .tabs-list button[role="tab"]'),
+			];
+			const panels = [...container.querySelectorAll<HTMLElement>(':scope > .tabs-panel')];
+			buttons.forEach((b, i) => {
+				const selected = i === idx;
+				b.setAttribute('aria-selected', selected ? 'true' : 'false');
+				b.tabIndex = selected ? 0 : -1;
+			});
+			panels.forEach((p, i) => p.toggleAttribute('hidden', i !== idx));
+		}
+
+		function applyToGroup(group: string, label: string) {
+			const selector = `.tabs[data-tabs-group="${CSS.escape(group)}"]`;
+			for (const t of article!.querySelectorAll<HTMLElement>(selector)) {
+				const buttons = [
+					...t.querySelectorAll<HTMLButtonElement>(':scope > .tabs-list button[role="tab"]'),
+				];
+				const idx = buttons.findIndex((b) => b.textContent?.trim() === label);
+				if (idx >= 0) selectIndex(t, idx);
+			}
+		}
+
+		for (const container of containers) {
+			const buttons = [
+				...container.querySelectorAll<HTMLButtonElement>(':scope > .tabs-list button[role="tab"]'),
+			];
+			if (buttons.length === 0) continue;
+			const group = container.dataset.tabsGroup ?? null;
+
+			if (group) {
+				try {
+					const stored = localStorage.getItem(`tab-group:${group}`);
+					if (stored) {
+						const idx = buttons.findIndex((b) => b.textContent?.trim() === stored);
+						if (idx >= 0) selectIndex(container, idx);
+					}
+				} catch {
+					// ignore
+				}
+			}
+
+			buttons.forEach((btn, i) => {
+				const onClick = () => {
+					const label = btn.textContent?.trim() ?? '';
+					if (group) {
+						try {
+							localStorage.setItem(`tab-group:${group}`, label);
+						} catch {
+							// ignore
+						}
+						applyToGroup(group, label);
+					} else {
+						selectIndex(container, i);
+					}
+				};
+				const onKey = (e: KeyboardEvent) => {
+					let target = -1;
+					if (e.key === 'ArrowRight') target = (i + 1) % buttons.length;
+					else if (e.key === 'ArrowLeft') target = (i - 1 + buttons.length) % buttons.length;
+					else if (e.key === 'Home') target = 0;
+					else if (e.key === 'End') target = buttons.length - 1;
+					if (target < 0) return;
+					e.preventDefault();
+					buttons[target].focus();
+					buttons[target].click();
+				};
+				btn.addEventListener('click', onClick);
+				btn.addEventListener('keydown', onKey);
+				cleanups.push(() => {
+					btn.removeEventListener('click', onClick);
+					btn.removeEventListener('keydown', onKey);
+				});
+			});
+		}
+
+		return () => {
+			for (const fn of cleanups) fn();
+		};
+	});
 </script>
 
 <svelte:head>
@@ -970,5 +1059,81 @@
 
 	:global(.dark .prose :not(pre) > span.shiki span) {
 		color: var(--shiki-dark);
+	}
+
+	:global(.prose .tabs) {
+		margin: 1.5rem 0;
+		border: 1px solid var(--border);
+		border-radius: 0.5rem;
+		background: var(--surface-raised);
+		overflow: hidden;
+	}
+
+	:global(.prose .tabs-list) {
+		display: flex;
+		background: var(--surface-overlay);
+		border-bottom: 1px solid var(--border-subtle);
+		overflow-x: auto;
+	}
+
+	:global(.prose .tabs-list button[role='tab']) {
+		flex: 0 0 auto;
+		padding: 0 0.85rem;
+		height: 2rem;
+		font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+		font-size: 0.72rem;
+		color: var(--foreground-subtle);
+		background: transparent;
+		border: 0;
+		cursor: pointer;
+		transition:
+			color 0.15s,
+			background-color 0.15s;
+	}
+
+	:global(.prose .tabs-list button[role='tab']:hover) {
+		color: var(--foreground-muted);
+	}
+
+	:global(.prose .tabs-list button[role='tab'][aria-selected='true']) {
+		color: var(--foreground);
+		background: var(--surface-raised);
+	}
+
+	:global(.prose .tabs-list button[role='tab']:focus-visible) {
+		outline: 2px solid var(--primary);
+		outline-offset: -2px;
+	}
+
+	:global(.prose .tabs-panel) {
+		padding: 1rem 1.25rem;
+	}
+
+	:global(.prose .tabs-panel:has(> pre.shiki:only-child)) {
+		padding: 0;
+	}
+
+	:global(.prose .tabs-panel > pre.shiki) {
+		border: 0;
+		border-radius: 0;
+		margin: 0;
+		background: transparent !important;
+	}
+
+	:global(.prose .tabs-panel > pre.shiki[data-lang])::after {
+		content: none;
+	}
+
+	:global(.prose .tabs-panel > pre.shiki[data-title])::before {
+		background: var(--surface-raised);
+		border-radius: 0;
+	}
+
+	:global(.prose .tabs-panel > :first-child) {
+		margin-top: 0;
+	}
+
+	:global(.prose .tabs-panel > :last-child) {
+		margin-bottom: 0;
 	}
 </style>

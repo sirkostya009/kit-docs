@@ -226,6 +226,70 @@ For irreversible / destructive actions.
 
 ---
 
+## Tabs
+
+Switch between equivalent snippets. Tabs that share a `groupId` sync their
+selection (persisted in `localStorage`).
+
+::::tabs{groupId="lang"}
+
+::tab[curl]
+
+```sh
+curl -X POST https://api.example.com/v1/items \
+  -H "Authorization: Bearer $TOKEN" \
+  -d '{"name":"thing"}'
+```
+
+::tab[js]
+
+```js
+await fetch('https://api.example.com/v1/items', {
+	method: 'POST',
+	headers: { Authorization: `Bearer ${token}` },
+	body: JSON.stringify({ name: 'thing' }),
+});
+```
+
+::tab[python]
+
+```python
+requests.post(
+    "https://api.example.com/v1/items",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"name": "thing"},
+)
+```
+
+::::
+
+Tabs combine with per-block `title="..."` — the title bar tucks under the
+selected tab so the active tab visually "opens" into its file:
+
+::::tabs{groupId="lang"}
+
+::tab[curl]
+
+```sh title="request.sh"
+curl https://api.example.com/v1/items/42
+```
+
+::tab[js]
+
+```js title="request.js"
+const res = await fetch('https://api.example.com/v1/items/42');
+```
+
+::tab[python]
+
+```python title="request.py"
+requests.get("https://api.example.com/v1/items/42")
+```
+
+::::
+
+---
+
 ## Code annotations
 
 ### Line highlight via meta
