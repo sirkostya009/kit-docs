@@ -18,7 +18,7 @@
 		<div class="flex flex-wrap gap-3">
 			<a
 				href="/"
-				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-sm transition-colors"
+				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,7 @@
 			</a>
 			<a
 				href="/getting-started.html"
-				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 text-sm font-semibold no-underline transition-colors"
+				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 font-semibold no-underline transition-colors"
 			>
 				Read the docs
 			</a>

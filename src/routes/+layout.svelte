@@ -111,7 +111,7 @@
 		{onclick}
 		aria-current={active ? 'page' : undefined}
 		class={[
-			'block rounded-md px-3 py-1.5 text-sm no-underline transition-colors',
+			'block rounded-md px-4 py-2.5 no-underline transition-colors md:px-3 md:py-1.5 md:text-sm',
 			active
 				? 'text-primary bg-primary-subtle font-medium'
 				: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay',
@@ -128,7 +128,7 @@
 		{:else}
 			<details class="nav-group" bind:open={openGroups[node.prefix]}>
 				<summary
-					class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors select-none"
+					class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 transition-colors select-none md:px-3 md:py-1.5 md:text-sm"
 				>
 					<span class="capitalize">{node.name.replace(/-/g, ' ')}</span>
 					<svg
@@ -164,7 +164,7 @@
 	{#each nav.groups as group (group.prefix)}
 		<details class="nav-group mt-4" bind:open={openGroups[group.prefix]}>
 			<summary
-				class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay mb-1 flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-bold capitalize transition-colors select-none"
+				class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay mb-1 flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 font-bold capitalize transition-colors select-none md:px-3 md:py-1.5 md:text-sm"
 			>
 				{group.name.replace(/-/g, ' ')}
 				<svg
@@ -206,7 +206,7 @@
 	<button
 		type="button"
 		onclick={() => (searchOpen = true)}
-		class="border-border bg-surface-raised text-foreground-subtle hover:bg-surface-overlay flex h-9 w-full cursor-text items-center gap-2 rounded-md border pr-2 pl-3 text-sm transition-colors"
+		class="border-border bg-surface-raised text-foreground-subtle hover:bg-surface-overlay flex h-11 w-full cursor-text items-center gap-2 rounded-md border pr-2 pl-3 transition-colors md:h-9 md:text-sm"
 	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -327,7 +327,7 @@
 	<div
 		role="region"
 		aria-label="Site announcement"
-		class="announcement-bar bg-primary fixed top-0 right-0 left-0 z-50 h-(--announce-h) text-sm text-white"
+		class="announcement-bar bg-primary fixed top-0 right-0 left-0 z-50 h-(--announce-h) text-white"
 	>
 		<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
 			<p class="truncate font-medium">
@@ -502,13 +502,8 @@
 </div>
 
 {#if sidebarOpen}
-	<div
-		class="fixed top-(--announce-h) right-0 bottom-14 left-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
-		onclick={() => (sidebarOpen = false)}
-		aria-hidden="true"
-	></div>
 	<aside
-		class="bg-surface border-border fixed top-(--announce-h) bottom-14 left-0 z-50 flex w-72 flex-col gap-3 overflow-y-auto border-r p-4 md:hidden"
+		class="bg-surface fixed top-(--announce-h) right-0 bottom-14 left-0 z-50 flex flex-col gap-3 overflow-y-auto p-4 md:hidden"
 	>
 		{@render searchTrigger()}
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">

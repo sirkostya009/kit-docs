@@ -225,7 +225,7 @@
 			onkeydown={onKey}
 			type="text"
 			placeholder="Search docs..."
-			class="text-foreground placeholder:text-foreground-subtle h-12 flex-1 bg-transparent text-sm outline-none"
+			class="text-foreground placeholder:text-foreground-subtle h-12 flex-1 bg-transparent text-base outline-none"
 		/>
 		<kbd
 			class="border-border bg-surface text-foreground-subtle hidden rounded border px-1.5 py-0.5 font-mono text-[0.65rem] sm:inline"
@@ -276,7 +276,7 @@
 
 	<div class="max-h-[60vh] overflow-y-auto p-2">
 		{#if !mini}
-			<p class="text-foreground-subtle px-3 py-6 text-center text-sm">Loading…</p>
+			<p class="text-foreground-subtle px-3 py-6 text-center">Loading…</p>
 		{:else if !query.trim()}
 			{#if recent.length > 0}
 				<div class="flex items-center justify-between px-3 pt-2 pb-1">
@@ -304,7 +304,7 @@
 								aria-selected={selected === i}
 								role="option"
 								class={[
-									'flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm transition-colors',
+									'flex w-full items-center gap-2 rounded-md px-3 py-2 text-left transition-colors',
 									selected === i
 										? 'bg-primary-subtle text-primary'
 										: 'text-foreground hover:bg-surface-overlay',
@@ -330,10 +330,10 @@
 					{/each}
 				</ul>
 			{:else}
-				<p class="text-foreground-subtle px-3 py-6 text-center text-sm">Start typing to search.</p>
+				<p class="text-foreground-subtle px-3 py-6 text-center">Start typing to search.</p>
 			{/if}
 		{:else if results.length === 0}
-			<p class="text-foreground-subtle px-3 py-6 text-center text-sm">
+			<p class="text-foreground-subtle px-3 py-6 text-center">
 				No results for &quot;{query}&quot;.
 			</p>
 		{:else}
@@ -356,7 +356,7 @@
 							role="option"
 							aria-selected={selected === i}
 						>
-							<div class="flex items-center gap-2 text-sm font-medium">
+							<div class="flex items-center gap-2 font-medium">
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 								{@html highlight(r.title, query)}
 								{#if r.matchedHeading}

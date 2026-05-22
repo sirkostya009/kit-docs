@@ -343,7 +343,7 @@
 				class="border-border-subtle bg-surface-raised mobile-toc sticky top-3.25 z-10 mb-6 rounded-lg border lg:hidden"
 			>
 				<summary
-					class="text-foreground hover:text-foreground flex cursor-pointer items-center gap-2.5 px-4 py-2.5 text-sm font-medium select-none"
+					class="text-foreground hover:text-foreground flex cursor-pointer items-center gap-2.5 px-4 py-2.5 font-medium select-none"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -401,7 +401,7 @@
 								data-sveltekit-noscroll
 								onclick={() => (mobileTocOpen = false)}
 								class={[
-									'block truncate py-1 text-sm no-underline transition-colors',
+									'block truncate py-1 no-underline transition-colors',
 									active.has(h.id)
 										? 'text-primary font-medium'
 										: 'text-foreground-muted hover:text-foreground',
@@ -515,12 +515,12 @@
 			<a
 				href="/{data.slug}.md"
 				data-sveltekit-reload
-				class="text-foreground-muted hover:text-foreground inline-flex items-center gap-1.5 text-xs no-underline transition-colors"
+				class="text-foreground-muted hover:text-foreground inline-flex items-center gap-1.5 text-sm no-underline transition-colors"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					width="12"
-					height="12"
+					width="14"
+					height="14"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"
@@ -641,18 +641,32 @@
 		margin-top: 2rem;
 	}
 
+	:global(.prose h1 a[href^='#']),
 	:global(.prose h2 a[href^='#']),
-	:global(.prose h3 a[href^='#']) {
+	:global(.prose h3 a[href^='#']),
+	:global(.prose h4 a[href^='#']),
+	:global(.prose h5 a[href^='#']),
+	:global(.prose h6 a[href^='#']) {
 		color: var(--foreground-subtle);
 		text-decoration: none;
-		opacity: 0;
-		transition: opacity 0.15s;
 		margin-left: 0.4em;
 		font-weight: 400;
 	}
 
+	:global(.prose h2 a[href^='#']),
+	:global(.prose h3 a[href^='#']),
+	:global(.prose h4 a[href^='#']),
+	:global(.prose h5 a[href^='#']),
+	:global(.prose h6 a[href^='#']) {
+		opacity: 0;
+		transition: opacity 0.15s;
+	}
+
 	:global(.prose h2:hover a[href^='#']),
-	:global(.prose h3:hover a[href^='#']) {
+	:global(.prose h3:hover a[href^='#']),
+	:global(.prose h4:hover a[href^='#']),
+	:global(.prose h5:hover a[href^='#']),
+	:global(.prose h6:hover a[href^='#']) {
 		opacity: 1;
 	}
 

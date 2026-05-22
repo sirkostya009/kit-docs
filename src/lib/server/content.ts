@@ -271,7 +271,7 @@ const processor = unified()
 	.use(rehypeSlug)
 	.use(rehypeAutolinkHeadings, {
 		behavior: 'append',
-		content: { type: 'text', value: ' #' },
+		content: { type: 'text', value: '#' },
 	})
 	.use(rehypeWrapSections)
 	.use(rehypeShiki, {

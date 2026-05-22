@@ -29,7 +29,7 @@
 			</p>
 			<a
 				href="/"
-				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-sm transition-colors"
+				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors"
 			>
 				Back to home
 			</a>

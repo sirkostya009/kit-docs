@@ -88,7 +88,7 @@
 		<div class="flex flex-wrap gap-3">
 			<a
 				href="/getting-started.html"
-				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 text-sm font-semibold text-white no-underline shadow-sm transition-colors"
+				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors"
 			>
 				Get started
 				<svg
@@ -111,7 +111,7 @@
 				href="https://github.com/sirkostya009/kit-docs"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 text-sm font-semibold no-underline transition-colors"
+				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 font-semibold no-underline transition-colors"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -232,8 +232,8 @@
 								>
 							{/if}
 						</span>
-						<span class="text-foreground text-sm font-semibold">{card.title}</span>
-						<span class="text-foreground-muted text-sm">{card.description}</span>
+						<span class="text-foreground font-semibold">{card.title}</span>
+						<span class="text-foreground-muted">{card.description}</span>
 					</a>
 				</li>
 			{/each}
