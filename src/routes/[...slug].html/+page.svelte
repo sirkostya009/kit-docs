@@ -23,15 +23,12 @@
 			'script>',
 	);
 
-	const crumbs = $derived.by(() => {
-		const groupTitles = Object.fromEntries(
-			data.nav.groups.map((g) => [g.name, g.name.replace(/-/g, ' ')]),
-		);
-		return data.slug.split('/').map((name: string) => ({
-			label: groupTitles[name] ?? name,
+	const crumbs = $derived(
+		data.slug.split('/').map((name: string) => ({
+			label: name.replace(/-/g, ' '),
 			href: null,
-		}));
-	});
+		})),
+	);
 
 	const lastModifiedLabel = $derived(
 		data.lastModified &&

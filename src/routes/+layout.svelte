@@ -2,11 +2,48 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
+	import { announcement } from '$lib/config';
 	import SearchModal from '$lib/SearchModal.svelte';
+	import type { NavNode } from '$lib/server/content';
 	import '../app.css';
 
 	let { data, children } = $props();
 	const { nav } = $derived(data);
+
+	function walkGroups(nodes: NavNode[], fn: (prefix: string) => void) {
+		for (const n of nodes) {
+			if (n.kind === 'group') {
+				fn(n.prefix);
+				walkGroups(n.children, fn);
+			}
+		}
+	}
+
+	const openGroups = $state<Record<string, boolean>>({});
+	// svelte-ignore state_referenced_locally
+	walkGroups(nav.groups, (prefix) => {
+		openGroups[prefix] = page.url.pathname.startsWith(`/${prefix}/`);
+	});
+
+	$effect(() => {
+		const path = page.url.pathname;
+		walkGroups(nav.groups, (prefix) => {
+			if (path.startsWith(`/${prefix}/`)) openGroups[prefix] = true;
+		});
+	});
+
+	let announcementDismissed = $state(
+		browser && announcement
+			? localStorage.getItem('announcement-dismissed') === announcement.id
+			: false,
+	);
+	const showAnnouncement = $derived(!!announcement && !announcementDismissed);
+
+	function dismissAnnouncement() {
+		if (!announcement) return;
+		localStorage.setItem('announcement-dismissed', announcement.id);
+		announcementDismissed = true;
+	}
 
 	type Theme = 'light' | 'dark' | 'system';
 	const themes: Theme[] = ['light', 'dark', 'system'];
@@ -72,6 +109,7 @@
 	<a
 		href="/{item.slug}.html"
 		{onclick}
+		aria-current={active ? 'page' : undefined}
 		class={[
 			'block rounded-md px-3 py-1.5 text-sm no-underline transition-colors',
 			active
@@ -83,19 +121,74 @@
 	</a>
 {/snippet}
 
+{#snippet navNodes(items: NavNode[], onclick?: () => void)}
+	{#each items as node (node.kind === 'leaf' ? node.slug : node.prefix)}
+		{#if node.kind === 'leaf'}
+			{@render navLink(node, onclick)}
+		{:else}
+			<details class="nav-group" bind:open={openGroups[node.prefix]}>
+				<summary
+					class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors select-none"
+				>
+					<span class="capitalize">{node.name.replace(/-/g, ' ')}</span>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="12"
+						height="12"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						class="nav-chevron text-foreground-subtle ml-auto transition-transform"
+						aria-hidden="true"
+					>
+						<polyline points="9 18 15 12 9 6" />
+					</svg>
+				</summary>
+				<div
+					class="after:bg-border-subtle relative pr-1 after:absolute after:top-0 after:right-4.5 after:bottom-0 after:w-px after:content-['']"
+				>
+					{@render navNodes(node.children, onclick)}
+				</div>
+			</details>
+		{/if}
+	{/each}
+{/snippet}
+
 {#snippet navTree(onclick?: () => void)}
 	{#each nav.top as item (item.slug)}
 		{@render navLink(item, onclick)}
 	{/each}
-	{#each nav.groups as group (group.name)}
-		<p
-			class="text-foreground-subtle mt-6 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
-		>
-			{group.name}
-		</p>
-		{#each group.items as item (item.slug)}
-			{@render navLink(item, onclick)}
-		{/each}
+	{#each nav.groups as group (group.prefix)}
+		<details class="nav-group mt-4" bind:open={openGroups[group.prefix]}>
+			<summary
+				class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay mb-1 flex cursor-pointer items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-bold capitalize transition-colors select-none"
+			>
+				{group.name.replace(/-/g, ' ')}
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="12"
+					height="12"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					class="nav-chevron text-foreground-subtle ml-auto transition-transform"
+					aria-hidden="true"
+				>
+					<polyline points="9 18 15 12 9 6" />
+				</svg>
+			</summary>
+			<div
+				class="after:bg-border-subtle relative pr-1 after:absolute after:top-0 after:right-4.5 after:bottom-0 after:w-px after:content-['']"
+			>
+				{@render navNodes(group.children, onclick)}
+			</div>
+		</details>
 	{/each}
 {/snippet}
 
@@ -230,6 +323,45 @@
 	<meta property="og:site_name" content="kit-docs" />
 </svelte:head>
 
+{#if showAnnouncement && announcement}
+	<div
+		role="region"
+		aria-label="Site announcement"
+		class="announcement-bar bg-primary fixed top-0 right-0 left-0 z-50 h-(--announce-h) text-sm text-white"
+	>
+		<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
+			<p class="truncate font-medium">
+				{announcement.text}
+				{#if announcement.href}
+					<a class="ml-1 underline underline-offset-2" href={announcement.href}>Learn more →</a>
+				{/if}
+			</p>
+			<button
+				type="button"
+				onclick={dismissAnnouncement}
+				class="hover:bg-primary-hover ml-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+				aria-label="Dismiss announcement"
+			>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<line x1="18" y1="6" x2="6" y2="18" />
+					<line x1="6" y1="6" x2="18" y2="18" />
+				</svg>
+			</button>
+		</div>
+	</div>
+{/if}
+
 <header
 	class="bg-surface/80 border-border fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-xl md:hidden"
 >
@@ -267,12 +399,11 @@
 </header>
 
 <aside
-	style="width: var(--sidebar-shelf)"
-	class="fixed inset-y-0 left-0 z-30 hidden justify-end overflow-hidden bg-(--sidebar) transition-[width] duration-200 ease-out md:flex"
+	class="fixed top-(--announce-h) bottom-0 left-0 z-30 hidden w-(--sidebar-shelf) justify-end overflow-hidden bg-(--sidebar) transition-[width] duration-200 ease-out md:flex"
 >
 	<div
 		class={[
-			'border-border-subtle flex h-screen w-64 shrink-0 flex-col gap-3 border-r p-4 transition-opacity duration-150',
+			'border-border-subtle flex h-full w-64 shrink-0 flex-col gap-3 border-r p-4 transition-opacity duration-150',
 			sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100',
 		]}
 	>
@@ -317,7 +448,7 @@
 
 <div
 	class={[
-		'fixed top-4 left-4 z-40 hidden gap-2 transition-[opacity,transform] duration-200 ease-out md:flex',
+		'fixed top-[calc(var(--announce-h))+1rem] left-4 z-40 hidden gap-2 transition-[opacity,transform] duration-200 ease-out md:flex',
 		sidebarCollapsed
 			? 'translate-x-0 opacity-100 delay-150'
 			: 'pointer-events-none -translate-x-2 opacity-0',
@@ -372,12 +503,12 @@
 
 {#if sidebarOpen}
 	<div
-		class="fixed inset-0 bottom-14 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+		class="fixed top-(--announce-h) right-0 bottom-14 left-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
 		onclick={() => (sidebarOpen = false)}
 		aria-hidden="true"
 	></div>
 	<aside
-		class="bg-surface border-border fixed top-0 bottom-14 left-0 z-50 flex w-72 flex-col gap-3 overflow-y-auto border-r p-4 md:hidden"
+		class="bg-surface border-border fixed top-(--announce-h) bottom-14 left-0 z-50 flex w-72 flex-col gap-3 overflow-y-auto border-r p-4 md:hidden"
 	>
 		{@render searchTrigger()}
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
@@ -393,10 +524,9 @@
 {/if}
 
 <div
-	style="padding-left: var(--sidebar-w)"
-	class="mx-auto flex min-h-screen max-w-(--layout-width) pb-14 transition-[padding] duration-200 ease-out md:pb-0"
+	class="mx-auto flex min-h-screen max-w-(--layout-width) pt-(--announce-h) pb-14 pl-(--sidebar-w) transition-[padding] duration-200 ease-out md:pb-0"
 >
-	<main class="w-full max-w-272 min-w-0 flex-1">
+	<main class="w-full min-w-0 flex-1">
 		{@render children()}
 	</main>
 </div>

@@ -212,7 +212,10 @@ export async function getPage(slug: string) {
 }
 
 export type NavItem = { slug: string; title: string; lastModified: string | null };
-export type NavTree = { top: NavItem[]; groups: { name: string; items: NavItem[] }[] };
+export type NavLeaf = { kind: 'leaf' } & NavItem;
+export type NavGroup = { kind: 'group'; name: string; prefix: string; children: NavNode[] };
+export type NavNode = NavLeaf | NavGroup;
+export type NavTree = { top: NavLeaf[]; groups: NavGroup[] };
 
 export const nav: NavItem[] = await Promise.all(
 	slugs.map(async ({ slug }) => {
@@ -225,21 +228,26 @@ export const nav: NavItem[] = await Promise.all(
 	}),
 );
 
-export const navTree: NavTree = (() => {
-	const top: NavItem[] = [];
-	const groupMap = new Map<string, NavItem[]>();
-	for (const item of nav) {
-		const idx = item.slug.indexOf('/');
-		if (idx === -1) top.push(item);
-		else {
-			const group = item.slug.slice(0, idx);
-			const items = groupMap.get(group) ?? [];
-			items.push(item);
-			groupMap.set(group, items);
+function partition(items: NavItem[], depth: number, parentPrefix: string): NavTree {
+	const top: NavLeaf[] = [];
+	const buckets = new Map<string, NavItem[]>();
+	for (const item of items) {
+		const parts = item.slug.split('/');
+		if (parts.length === depth + 1) {
+			top.push({ kind: 'leaf', ...item });
+		} else {
+			const name = parts[depth];
+			const bucket = buckets.get(name) ?? [];
+			bucket.push(item);
+			buckets.set(name, bucket);
 		}
 	}
-	return {
-		top,
-		groups: [...groupMap].map(([name, items]) => ({ name, items })),
-	};
-})();
+	const groups: NavGroup[] = [...buckets].map(([name, items]) => {
+		const prefix = parentPrefix ? `${parentPrefix}/${name}` : name;
+		const sub = partition(items, depth + 1, prefix);
+		return { kind: 'group', name, prefix, children: [...sub.top, ...sub.groups] };
+	});
+	return { top, groups };
+}
+
+export const navTree: NavTree = partition(nav, 0, '');
