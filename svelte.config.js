@@ -1,6 +1,15 @@
 import adapter from '@sveltejs/adapter-static';
+import { execSync } from 'node:child_process';
 import { resolve } from 'node:path';
 import { checkLinks } from './scripts/check-links.js';
+
+const version = (() => {
+	try {
+		return execSync('git rev-parse --short HEAD').toString().trim();
+	} catch {
+		return process.env.GIT_COMMIT ?? 'dev';
+	}
+})();
 
 /** wrap adapter-static so the link check runs as the final step of `vite build`
  *  and a failure aborts the build (the adapter's `adapt()` is awaited by kit). */
@@ -26,6 +35,7 @@ const config = {
 	kit: {
 		adapter: adapterWithLinkCheck({ precompress: true }),
 		prerender: { handleMissingId: 'warn', entries: ['*', '/_sitemap.md'] },
+		version: { name: version },
 	},
 	vitePlugin: {
 		inspector: {
@@ -35,7 +45,6 @@ const config = {
 			toggleButtonPos: 'bottom-right',
 		},
 	},
-	compilerOptions: { experimental: { async: true } },
 };
 
 export default config;
