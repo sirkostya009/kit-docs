@@ -164,7 +164,7 @@ function remarkAdmonitions() {
 			}
 
 			directive.data ??= {};
-			directive.data.hName = 'aside';
+			directive.data.hName = 'div';
 			directive.data.hProperties = {
 				className: ['admonition', `admonition-${directive.name}`],
 				role: 'note',

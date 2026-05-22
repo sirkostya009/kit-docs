@@ -814,12 +814,26 @@
 	}
 
 	:global(.prose .admonition .admonition-title) {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
 		margin: 0 0 0.35rem;
 		font-weight: 600;
-		font-size: 0.85rem;
+		font-size: 1rem;
 		text-transform: capitalize;
 		color: var(--admonition-color);
 		letter-spacing: 0.01em;
+	}
+
+	:global(.prose .admonition .admonition-title)::before {
+		content: '';
+		display: inline-block;
+		flex-shrink: 0;
+		width: 1.35em;
+		height: 1.35em;
+		background-color: currentColor;
+		-webkit-mask: var(--admonition-icon) center / contain no-repeat;
+		mask: var(--admonition-icon) center / contain no-repeat;
 	}
 
 	:global(.dark .prose .admonition .admonition-title) {
@@ -837,18 +851,23 @@
 	:global(.prose .admonition-note),
 	:global(.prose .admonition-info) {
 		--admonition-color: var(--color-primary-500);
+		--admonition-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 16v-4'/><path d='M12 8h.01'/></svg>");
 	}
 	:global(.prose .admonition-tip) {
 		--admonition-color: #16a34a;
+		--admonition-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/><path d='M9 18h6'/><path d='M10 22h4'/></svg>");
 	}
 	:global(.prose .admonition-warning) {
 		--admonition-color: #d97706;
+		--admonition-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z'/><path d='M12 9v4'/><path d='M12 17h.01'/></svg>");
 	}
 	:global(.prose .admonition-caution) {
 		--admonition-color: #ea580c;
+		--admonition-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><path d='M12 8v4'/><path d='M12 16h.01'/></svg>");
 	}
 	:global(.prose .admonition-danger) {
 		--admonition-color: #dc2626;
+		--admonition-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2'/><path d='M12 8v4'/><path d='M12 16h.01'/></svg>");
 	}
 
 	:global(.prose .shiki[data-title]) {
