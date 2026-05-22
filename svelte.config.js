@@ -25,7 +25,7 @@ function adapterWithLinkCheck(/** @type {Parameters<typeof adapter>[0]} */ opts)
 const config = {
 	kit: {
 		adapter: adapterWithLinkCheck({ precompress: true }),
-		prerender: { handleMissingId: 'warn' },
+		prerender: { handleMissingId: 'warn', entries: ['*', '/_sitemap.md'] },
 	},
 	vitePlugin: {
 		inspector: {

@@ -198,6 +198,22 @@ Footnotes render as superscript links.[^1] Named footnotes work too.[^note]
 
 ---
 
+## API routes
+
+Highlight an HTTP method + path. Two syntaxes — attributes or inline label.
+
+::route{method=GET path="/api/users"}
+
+::route{method=POST path="/api/users"}
+
+::route{method=PATCH path="/api/users/:id"}
+
+::route{method=DELETE path="/api/users/:id"}
+
+::route[GET /api/short-form]
+
+---
+
 ## Admonitions
 
 :::note

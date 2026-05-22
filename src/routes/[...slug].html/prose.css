@@ -316,6 +316,66 @@
 	--admonition-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polygon points='7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2'/><path d='M12 8v4'/><path d='M12 16h.01'/></svg>");
 }
 
+.prose .route {
+	display: flex;
+	align-items: stretch;
+	margin: 1.5rem 0;
+	border: 1px solid var(--border);
+	border-radius: 0.5rem;
+	overflow: hidden;
+	background: var(--surface-raised);
+}
+
+.prose .route .route-method {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 4.5rem;
+	padding: 0.5rem 0.75rem;
+	font-weight: 700;
+	font-size: 0.75rem;
+	letter-spacing: 0.05em;
+	color: var(--route-color, var(--foreground));
+	background: color-mix(in oklab, var(--route-color, var(--foreground)) 18%, transparent);
+	border-right: 1px solid var(--border);
+}
+
+.prose .route .route-path {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	padding: 0.5rem 0.85rem;
+	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+	font-size: 0.9rem;
+	background: transparent;
+	border: 0;
+	border-radius: 0;
+	word-break: break-all;
+}
+
+.prose .route .route-path::before,
+.prose .route .route-path::after {
+	content: none;
+}
+
+.prose .route-get {
+	--route-color: #0ea5e9;
+}
+.prose .route-post {
+	--route-color: #10b981;
+}
+.prose .route-put,
+.prose .route-patch {
+	--route-color: #f59e0b;
+}
+.prose .route-delete {
+	--route-color: #ef4444;
+}
+.prose .route-head,
+.prose .route-options {
+	--route-color: #8b5cf6;
+}
+
 .prose .shiki[data-title] {
 	padding-top: 3rem !important;
 	position: relative;

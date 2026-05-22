@@ -18,6 +18,26 @@
 	const title = $derived(data.metadata.title ? `${data.metadata.title} · kit-docs` : 'kit-docs');
 	const description = $derived(data.metadata.description ?? '');
 	const canonicalUrl = $derived(`${data.origin}/${params.slug}.html`);
+	const markdownUrl = $derived(`${data.origin}/${params.slug}.md`);
+	const aiPrompt = $derived(`Read ${markdownUrl} and help me with my questions about it.`);
+	const chatgptUrl = $derived(`https://chatgpt.com/?q=${encodeURIComponent(aiPrompt)}`);
+	const claudeUrl = $derived(`https://claude.ai/new?q=${encodeURIComponent(aiPrompt)}`);
+
+	let popoverOpen = $state(false);
+	let copyState = $state<'idle' | 'copied' | 'failed'>('idle');
+	let copyResetTimer: ReturnType<typeof setTimeout> | null = null;
+	async function copyMarkdown() {
+		try {
+			const res = await fetch(`/${params.slug}.md`);
+			const text = await res.text();
+			await navigator.clipboard.writeText(text);
+			copyState = 'copied';
+		} catch {
+			copyState = 'failed';
+		}
+		if (copyResetTimer) clearTimeout(copyResetTimer);
+		copyResetTimer = setTimeout(() => (copyState = 'idle'), 1500);
+	}
 	const ldScript = $derived(
 		'<script type="application/ld+json">' +
 			JSON.stringify({
@@ -518,32 +538,12 @@
 
 	<aside class="mr-8 w-56 shrink-0 py-8 max-lg:hidden">
 		<nav class="sticky top-24">
-			{#if data.headings.length > 0}
-				<p class="text-foreground-subtle mb-3 text-[0.7rem] font-semibold tracking-wider uppercase">
-					On this page
-				</p>
-				<ul class="border-border-subtle mb-6 border-l">
-					{#each data.headings as h (h.id)}
-						<li>
-							<a
-								href="#{h.id}"
-								data-sveltekit-noscroll
-								class={[
-									'-ml-px block truncate border-l-2 py-1 text-sm no-underline transition-colors',
-									active.has(h.id)
-										? 'border-primary text-primary font-medium'
-										: 'text-foreground-muted hover:text-foreground border-transparent',
-									h.level === 3 ? 'pl-6' : 'pl-3',
-								]}>{h.text}</a
-							>
-						</li>
-					{/each}
-				</ul>
-			{/if}
-			<a
-				href="/{params.slug}.md"
-				data-sveltekit-reload
-				class="text-foreground-muted hover:text-foreground inline-flex items-center gap-1.5 text-sm no-underline transition-colors"
+			<button
+				type="button"
+				commandfor="page-actions-popover"
+				command="toggle-popover"
+				class="text-foreground-muted hover:text-foreground mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm no-underline transition-colors select-none"
+				style="anchor-name: --page-actions-anchor;"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -561,7 +561,145 @@
 					/></svg
 				>
 				View source
-			</a>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="10"
+					height="10"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2.5"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+					class={['ml-0.5 [transition:transform_0.15s_ease]', popoverOpen && 'rotate-90']}
+					><path d="m9 18 6-6-6-6" /></svg
+				>
+			</button>
+			<ul
+				id="page-actions-popover"
+				popover
+				ontoggle={(e) => (popoverOpen = (e as ToggleEvent).newState === 'open')}
+				class="border-border-subtle bg-surface-raised m-0 hidden flex-col gap-0.5 rounded-md border p-1 text-sm shadow-md open:flex"
+				style="position-anchor: --page-actions-anchor; top: anchor(bottom); left: anchor(left); margin-top: 0.375rem;"
+			>
+				<li>
+					<a
+						href="/{params.slug}.md"
+						data-sveltekit-reload
+						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full items-center gap-2 rounded px-2 py-1.5 no-underline transition-colors"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+							><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline
+								points="14 2 14 8 20 8"
+							/></svg
+						>
+						View raw markdown
+					</a>
+				</li>
+				<li>
+					<button
+						type="button"
+						onclick={copyMarkdown}
+						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left transition-colors"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+							><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path
+								d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+							/></svg
+						>
+						{copyState === 'copied'
+							? 'Copied!'
+							: copyState === 'failed'
+								? 'Copy failed'
+								: 'Copy as markdown'}
+					</button>
+				</li>
+				<li>
+					<a
+						href={chatgptUrl}
+						target="_blank"
+						rel="noopener"
+						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full items-center gap-2 rounded px-2 py-1.5 no-underline transition-colors"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+							><path
+								d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.5093-2.6067-1.5093Z"
+							/></svg
+						>
+						Open in ChatGPT
+					</a>
+				</li>
+				<li>
+					<a
+						href={claudeUrl}
+						target="_blank"
+						rel="noopener"
+						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full items-center gap-2 rounded px-2 py-1.5 no-underline transition-colors"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="currentColor"
+							aria-hidden="true"
+							><path
+								d="M17.3041 3.541H13.7472L20.2718 20.459H23.8287L17.3041 3.541ZM6.6959 3.541L0.1713 20.459H3.7984L5.1328 17.0019H11.9645L13.2989 20.459H16.926L10.4014 3.541H6.6959ZM6.354 13.9243L8.5486 8.2363L10.7433 13.9243H6.354Z"
+							/></svg
+						>
+						Open in Claude
+					</a>
+				</li>
+			</ul>
+			{#if data.headings.length > 0}
+				<p class="text-foreground-subtle mb-3 text-[0.7rem] font-semibold tracking-wider uppercase">
+					On this page
+				</p>
+				<ul class="border-border-subtle border-l">
+					{#each data.headings as h (h.id)}
+						<li>
+							<a
+								href="#{h.id}"
+								data-sveltekit-noscroll
+								class={[
+									'-ml-px block truncate border-l-2 py-1 text-sm no-underline transition-colors',
+									active.has(h.id)
+										? 'border-primary text-primary font-medium'
+										: 'text-foreground-muted hover:text-foreground border-transparent',
+									h.level === 3 ? 'pl-6' : 'pl-3',
+								]}>{h.text}</a
+							>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</nav>
 	</aside>
 </div>
