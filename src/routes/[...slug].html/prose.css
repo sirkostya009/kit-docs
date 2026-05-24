@@ -15,37 +15,37 @@
 	--tw-prose-pre-bg: var(--surface-raised);
 	--tw-prose-th-borders: var(--border);
 	--tw-prose-td-borders: var(--border-subtle);
-	font-size: 0.975rem;
+	font-size: calc(var(--spacing) * 3.9);
 }
 
 .prose h1 {
-	font-size: 2.25rem;
-	font-weight: 700;
-	letter-spacing: -0.025em;
+	font-size: var(--text-4xl);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: var(--tracking-tight);
 	line-height: 1.15;
-	margin-bottom: 0.5rem;
+	margin-bottom: calc(var(--spacing) * 2);
 }
 
 .prose h1 + p {
-	font-size: 1.125rem;
+	font-size: var(--text-lg);
 	color: var(--foreground-muted);
 	margin-top: 0;
 }
 
 .prose h2 {
-	font-size: 1.5rem;
-	font-weight: 600;
-	letter-spacing: -0.015em;
-	margin-top: 3rem;
+	font-size: var(--text-2xl);
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tracking-tight);
+	margin-top: calc(var(--spacing) * 12);
 	padding-top: 0;
 	border-top: none;
 }
 
 .prose h3 {
-	font-size: 1.125rem;
-	font-weight: 600;
-	letter-spacing: -0.01em;
-	margin-top: 2rem;
+	font-size: var(--text-lg);
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tracking-tight);
+	margin-top: calc(var(--spacing) * 8);
 }
 
 .prose h1 a[href^='#'],
@@ -56,8 +56,8 @@
 .prose h6 a[href^='#'] {
 	color: var(--foreground-subtle);
 	text-decoration: none;
-	margin-left: 0.4em;
-	font-weight: 400;
+	margin-left: calc(var(--spacing) * 1.6);
+	font-weight: var(--font-weight-normal);
 }
 
 .prose h2 a[href^='#'],
@@ -66,7 +66,7 @@
 .prose h5 a[href^='#'],
 .prose h6 a[href^='#'] {
 	opacity: 0;
-	transition: opacity 0.15s;
+	transition: opacity var(--default-transition-duration);
 }
 
 .prose h2:hover a[href^='#'],
@@ -85,25 +85,25 @@
 .prose :not(pre):not(.shiki) > code {
 	background: var(--surface-overlay);
 	border: 1px solid var(--border-subtle);
-	border-radius: 0.375rem;
-	padding: 0.15em 0.4em;
-	font-size: 0.85em;
-	font-weight: 500;
+	border-radius: var(--radius-md);
+	padding: calc(var(--spacing) * 0.6) calc(var(--spacing) * 1.6);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
 }
 
 .prose input[type='checkbox'] {
 	appearance: none;
 	-webkit-appearance: none;
-	width: 1em;
-	height: 1em;
-	margin: 0 0.4em 0 0;
+	width: calc(var(--spacing) * 4);
+	height: calc(var(--spacing) * 4);
+	margin: 0 calc(var(--spacing) * 1.6) 0 0;
 	border: 1px solid var(--border);
-	border-radius: 0.25em;
+	border-radius: var(--radius-sm);
 	background: var(--surface-raised);
 	cursor: default;
 	display: inline-block;
 	position: relative;
-	vertical-align: -0.15em;
+	vertical-align: calc(var(--spacing) * -0.6);
 }
 
 .prose input[type='checkbox']:checked {
@@ -128,18 +128,18 @@
 }
 
 .prose pre {
-	border-radius: 0.5rem;
+	border-radius: var(--radius-lg);
 	border: 1px solid var(--border);
 	padding: 0;
 	background: var(--surface-raised);
 }
 
 .prose pre.shiki {
-	padding: 1rem 1.25rem;
-	border-radius: 0.5rem;
+	padding: calc(var(--spacing) * 4) calc(var(--spacing) * 5);
+	border-radius: var(--radius-lg);
 	border: 1px solid var(--border);
 	overflow-x: auto;
-	font-size: 0.85em;
+	font-size: var(--text-sm);
 	background: var(--surface-raised) !important;
 }
 
@@ -156,7 +156,7 @@
 .prose a {
 	text-underline-offset: 3px;
 	text-decoration-color: color-mix(in oklab, var(--primary) 40%, transparent);
-	font-weight: 500;
+	font-weight: var(--font-weight-medium);
 }
 
 .prose a:hover {
@@ -165,8 +165,8 @@
 
 .prose blockquote {
 	font-style: normal;
-	padding: 1rem 1.25rem;
-	border-radius: 0 0.375rem 0.375rem 0;
+	padding: calc(var(--spacing) * 4) calc(var(--spacing) * 5);
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
 	border-left-width: 3px;
 	--bq-c: var(--color-primary-500);
 	--bq-c-dark: var(--color-primary-400);
@@ -231,7 +231,7 @@
 
 .prose table {
 	border: 1px solid var(--border);
-	border-radius: 0.5rem;
+	border-radius: var(--radius-lg);
 	overflow: hidden;
 	border-collapse: separate;
 	border-spacing: 0;
@@ -243,16 +243,16 @@
 
 .prose th,
 .prose td {
-	padding: 0.6rem 0.85rem;
+	padding: calc(var(--spacing) * 2.4) calc(var(--spacing) * 3.4);
 }
 
 .prose .admonition {
 	--admonition-color: var(--color-primary-500);
-	margin: 1.5rem 0;
-	padding: 0.75rem 1rem;
+	margin: calc(var(--spacing) * 6) 0;
+	padding: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
 	border-left: 3px solid var(--admonition-color);
 	background: color-mix(in oklab, var(--admonition-color) 10%, transparent);
-	border-radius: 0 0.375rem 0.375rem 0;
+	border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 .dark .prose .admonition {
@@ -262,21 +262,21 @@
 .prose .admonition .admonition-title {
 	display: flex;
 	align-items: center;
-	gap: 0.4rem;
-	margin: 0 0 0.35rem;
-	font-weight: 600;
-	font-size: 1rem;
+	gap: calc(var(--spacing) * 1.6);
+	margin: 0 0 calc(var(--spacing) * 1.4);
+	font-weight: var(--font-weight-semibold);
+	font-size: var(--text-base);
 	text-transform: capitalize;
 	color: var(--admonition-color);
-	letter-spacing: 0.01em;
+	letter-spacing: var(--tracking-tight);
 }
 
 .prose .admonition .admonition-title::before {
 	content: '';
 	display: inline-block;
 	flex-shrink: 0;
-	width: 1.35em;
-	height: 1.35em;
+	width: calc(var(--spacing) * 5.4);
+	height: calc(var(--spacing) * 5.4);
 	background-color: currentColor;
 	-webkit-mask: var(--admonition-icon) center / contain no-repeat;
 	mask: var(--admonition-icon) center / contain no-repeat;
@@ -287,7 +287,7 @@
 }
 
 .prose .admonition > :not(.admonition-title) {
-	margin: 0.35rem 0;
+	margin: calc(var(--spacing) * 1.4) 0;
 }
 
 .prose .admonition > :last-child {
@@ -319,9 +319,9 @@
 .prose .route {
 	display: flex;
 	align-items: stretch;
-	margin: 1.5rem 0;
+	margin: calc(var(--spacing) * 6) 0;
 	border: 1px solid var(--border);
-	border-radius: 0.5rem;
+	border-radius: var(--radius-lg);
 	overflow: hidden;
 	background: var(--surface-raised);
 }
@@ -330,11 +330,11 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	min-width: 4.5rem;
-	padding: 0.5rem 0.75rem;
-	font-weight: 700;
-	font-size: 0.75rem;
-	letter-spacing: 0.05em;
+	min-width: calc(var(--spacing) * 18);
+	padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+	font-weight: var(--font-weight-bold);
+	font-size: var(--text-xs);
+	letter-spacing: var(--tracking-wider);
 	color: var(--route-color, var(--foreground));
 	background: color-mix(in oklab, var(--route-color, var(--foreground)) 18%, transparent);
 	border-right: 1px solid var(--border);
@@ -344,9 +344,9 @@
 	display: flex;
 	align-items: center;
 	flex: 1;
-	padding: 0.5rem 0.85rem;
+	padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3.4);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 0.9rem;
+	font-size: var(--text-sm);
 	background: transparent;
 	border: 0;
 	border-radius: 0;
@@ -377,7 +377,7 @@
 }
 
 .prose .shiki[data-title] {
-	padding-top: 3rem !important;
+	padding-top: calc(var(--spacing) * 12) !important;
 	position: relative;
 }
 
@@ -387,34 +387,34 @@
 	top: 0;
 	left: 0;
 	right: 0;
-	height: 2rem;
+	height: calc(var(--spacing) * 8);
 	display: flex;
 	align-items: center;
-	padding: 0 1.25rem;
+	padding: 0 calc(var(--spacing) * 5);
 	box-sizing: border-box;
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 0.72rem;
+	font-size: var(--text-xs);
 	color: var(--foreground-muted);
 	background: var(--surface-overlay);
 	border-bottom: 1px solid var(--border-subtle);
-	border-radius: 0.5rem 0.5rem 0 0;
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 .prose .shiki .line.highlighted {
 	display: inline-block;
-	width: calc(100% + 2.5rem);
-	margin: 0 -1.25rem;
-	padding: 0 1.25rem;
+	width: calc(100% + var(--spacing) * 10);
+	margin: 0 calc(var(--spacing) * -5);
+	padding: 0 calc(var(--spacing) * 5);
 	background: color-mix(in oklab, var(--color-primary-500) 12%, transparent);
 	border-left: 2px solid var(--color-primary-500);
-	padding-left: calc(1.25rem - 2px);
+	padding-left: calc(var(--spacing) * 5 - 2px);
 }
 
 .prose .shiki .line.diff {
 	display: inline-block;
-	width: calc(100% + 2.5rem);
-	margin: 0 -1.25rem;
-	padding: 0 1.25rem;
+	width: calc(100% + var(--spacing) * 10);
+	margin: 0 calc(var(--spacing) * -5);
+	padding: 0 calc(var(--spacing) * 5);
 	position: relative;
 }
 
@@ -429,8 +429,8 @@
 
 .prose .shiki .line.diff::before {
 	position: absolute;
-	left: 0.4rem;
-	font-weight: 600;
+	left: calc(var(--spacing) * 1.6);
+	font-weight: var(--font-weight-semibold);
 }
 
 .prose .shiki .line.diff.add::before {
@@ -450,30 +450,30 @@
 .prose pre.shiki > button.copy-code,
 .prose pre.shiki > button.wrap-code {
 	position: absolute;
-	top: 0.5rem;
+	top: calc(var(--spacing) * 2);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 1.75rem;
-	height: 1.75rem;
+	width: calc(var(--spacing) * 7);
+	height: calc(var(--spacing) * 7);
 	color: var(--foreground-muted);
 	background: var(--surface-overlay);
 	border: 1px solid var(--border-subtle);
-	border-radius: 0.3rem;
+	border-radius: var(--radius-sm);
 	cursor: pointer;
 	opacity: 0;
 	transition:
-		opacity 0.15s ease,
-		color 0.15s ease,
-		background-color 0.15s ease;
+		opacity var(--default-transition-duration) ease,
+		color var(--default-transition-duration) ease,
+		background-color var(--default-transition-duration) ease;
 }
 
 .prose pre.shiki > button.copy-code {
-	right: 0.5rem;
+	right: calc(var(--spacing) * 2);
 }
 
 .prose pre.shiki > button.wrap-code {
-	right: 2.5rem;
+	right: calc(var(--spacing) * 10);
 }
 
 .prose pre.shiki:hover > button.copy-code,
@@ -502,26 +502,26 @@
 
 .prose pre.shiki[data-title] > button.copy-code,
 .prose pre.shiki[data-title] > button.wrap-code {
-	top: 0.25rem;
-	width: 1.5rem;
-	height: 1.5rem;
+	top: var(--spacing);
+	width: calc(var(--spacing) * 6);
+	height: calc(var(--spacing) * 6);
 }
 
 .prose pre.shiki[data-title] > button.wrap-code {
-	right: 2.2rem;
+	right: calc(var(--spacing) * 8.8);
 }
 
 .prose pre.shiki[data-lang]::after {
 	content: attr(data-lang);
 	position: absolute;
-	top: 0.55rem;
-	right: 0.7rem;
+	top: calc(var(--spacing) * 2.2);
+	right: calc(var(--spacing) * 2.8);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 0.7rem;
+	font-size: var(--text-xs);
 	color: var(--foreground-subtle);
-	letter-spacing: 0.02em;
+	letter-spacing: var(--tracking-wide);
 	pointer-events: none;
-	transition: opacity 0.15s ease;
+	transition: opacity var(--default-transition-duration) ease;
 }
 
 .prose pre.shiki[data-lang]:hover::after,
@@ -530,8 +530,8 @@
 }
 
 .prose pre.shiki[data-title][data-lang]::after {
-	top: 0.4rem;
-	right: 0.85rem;
+	top: calc(var(--spacing) * 1.6);
+	right: calc(var(--spacing) * 3.4);
 }
 
 .prose pre.shiki[data-line-numbers] {
@@ -549,8 +549,8 @@
 .prose pre.shiki[data-line-numbers] .line::before {
 	content: counter(shiki-line);
 	display: inline-block;
-	width: 1.75em;
-	margin-right: 1.25rem;
+	width: calc(var(--spacing) * 7);
+	margin-right: calc(var(--spacing) * 5);
 	text-align: right;
 	color: var(--foreground-subtle);
 	user-select: none;
@@ -564,10 +564,10 @@
 .prose :not(pre) > span.shiki {
 	background: var(--surface-overlay);
 	border: 1px solid var(--border-subtle);
-	border-radius: 0.375rem;
-	padding: 0.15em 0.4em;
-	font-size: 0.85em;
-	font-weight: 500;
+	border-radius: var(--radius-md);
+	padding: calc(var(--spacing) * 0.6) calc(var(--spacing) * 1.6);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-medium);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
@@ -587,9 +587,9 @@
 }
 
 .prose .tabs {
-	margin: 1.5rem 0;
+	margin: calc(var(--spacing) * 6) 0;
 	border: 1px solid var(--border);
-	border-radius: 0.5rem;
+	border-radius: var(--radius-lg);
 	background: var(--surface-raised);
 	overflow: hidden;
 }
@@ -603,17 +603,17 @@
 
 .prose .tabs-list button[role='tab'] {
 	flex: 0 0 auto;
-	padding: 0 0.85rem;
-	height: 2rem;
+	padding: 0 calc(var(--spacing) * 3.4);
+	height: calc(var(--spacing) * 8);
 	font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-	font-size: 0.72rem;
+	font-size: var(--text-xs);
 	color: var(--foreground-subtle);
 	background: transparent;
 	border: 0;
 	cursor: pointer;
 	transition:
-		color 0.15s,
-		background-color 0.15s;
+		color var(--default-transition-duration),
+		background-color var(--default-transition-duration);
 }
 
 .prose .tabs-list button[role='tab']:hover {
@@ -631,7 +631,7 @@
 }
 
 .prose .tabs-panel {
-	padding: 1rem 1.25rem;
+	padding: calc(var(--spacing) * 4) calc(var(--spacing) * 5);
 }
 
 .prose .tabs-panel:has(> pre.shiki:only-child) {
