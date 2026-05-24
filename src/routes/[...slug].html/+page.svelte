@@ -19,7 +19,7 @@
 	const description = $derived(data.metadata.description ?? '');
 	const canonicalUrl = $derived(`${data.origin}/${params.slug}.html`);
 	const markdownUrl = $derived(`${data.origin}/${params.slug}.md`);
-	const aiPrompt = $derived(`Read ${markdownUrl} and help me with my questions about it.`);
+	const aiPrompt = $derived(`Please read ${markdownUrl} and prepare to answer questions about it.`);
 	const chatgptUrl = $derived(`https://chatgpt.com/?q=${encodeURIComponent(aiPrompt)}`);
 	const claudeUrl = $derived(`https://claude.ai/new?q=${encodeURIComponent(aiPrompt)}`);
 
@@ -37,6 +37,18 @@
 		}
 		if (copyResetTimer) clearTimeout(copyResetTimer);
 		copyResetTimer = setTimeout(() => (copyState = 'idle'), 1500);
+	}
+	let copyUrlState = $state<'idle' | 'copied' | 'failed'>('idle');
+	let copyUrlResetTimer: ReturnType<typeof setTimeout> | null = null;
+	async function copyMarkdownUrl() {
+		try {
+			await navigator.clipboard.writeText(markdownUrl);
+			copyUrlState = 'copied';
+		} catch {
+			copyUrlState = 'failed';
+		}
+		if (copyUrlResetTimer) clearTimeout(copyUrlResetTimer);
+		copyUrlResetTimer = setTimeout(() => (copyUrlState = 'idle'), 1500);
 	}
 	const ldScript = $derived(
 		'<script type="application/ld+json">' +
@@ -635,6 +647,35 @@
 								: 'Copy as markdown'}
 					</button>
 				</li>
+				<li>
+					<button
+						type="button"
+						onclick={copyMarkdownUrl}
+						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left transition-colors"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+							><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path
+								d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+							/></svg
+						>
+						{copyUrlState === 'copied'
+							? 'Copied!'
+							: copyUrlState === 'failed'
+								? 'Copy failed'
+								: 'Copy markdown URL'}
+					</button>
+				</li>
+				<li role="separator" aria-hidden="true" class="border-border-subtle my-1 border-t"></li>
 				<li>
 					<a
 						href={chatgptUrl}
