@@ -366,3 +366,19 @@ function done() {}
 ### Inline highlighting
 
 The runtime function `fetch(url){:js}` returns a Promise, while `let mut x: i32 = 0;{:rust}` declares a mutable binding. Languages render with the same dual-theme tokens as fenced blocks.
+
+---
+
+## Math
+
+Inline math like $E = mc^2$ flows with the surrounding text, and the Pythagorean identity $a^2 + b^2 = c^2$ renders alongside prose.
+
+Display math is rendered as a centered block:
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2}\, dx = \sqrt{\pi}
+$$
+
+$$
+\frac{\partial}{\partial t}\,\psi(\mathbf{r}, t) = -\frac{i}{\hbar}\,\hat{H}\,\psi(\mathbf{r}, t)
+$$

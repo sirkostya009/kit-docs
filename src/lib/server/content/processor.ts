@@ -9,9 +9,11 @@ import rehypeSlug from 'rehype-slug';
 import rehypeStringify from 'rehype-stringify';
 import remarkDirective from 'remark-directive';
 import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
 import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
+import rehypeMath from './rehype/math';
 import rehypeWrapSections from './rehype/wrap-sections';
 import remarkAdmonitions from './remark/admonitions';
 import remarkRoute from './remark/route';
@@ -21,6 +23,7 @@ import { transformerLang, transformerLineNumbers, transformerTitle } from './shi
 const processor = unified()
 	.use(remarkParse)
 	.use(remarkGfm)
+	.use(remarkMath)
 	.use(remarkDirective)
 	.use(remarkTabs)
 	.use(remarkAdmonitions)
@@ -32,6 +35,7 @@ const processor = unified()
 		content: { type: 'text', value: '#' },
 	})
 	.use(rehypeWrapSections)
+	.use(rehypeMath)
 	.use(rehypeShiki, {
 		themes: { light: 'github-light', dark: 'github-dark' },
 		defaultColor: false,
@@ -47,6 +51,6 @@ const processor = unified()
 			transformerLineNumbers(),
 		],
 	})
-	.use(rehypeStringify);
+	.use(rehypeStringify, { allowDangerousHtml: true });
 
 export default processor;
