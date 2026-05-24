@@ -1,4 +1,4 @@
-import { pages } from '$lib/server/content';
+import { pages } from '$lib/server/content/pages';
 import { origin } from '$lib/server/origin';
 
 export const prerender = true;

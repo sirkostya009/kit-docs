@@ -1,4 +1,4 @@
-import { pages } from '$lib/server/content';
+import { pages } from '$lib/server/content/pages';
 import { partition, type NavGroup, type NavLeaf } from '$lib/nav';
 import { origin } from '$lib/server/origin';
 

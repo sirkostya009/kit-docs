@@ -1,4 +1,5 @@
-import { lastModified, pages, slugs } from '$lib/server/content';
+import { slugs } from '$lib/server/content/entries';
+import { lastModified, pages } from '$lib/server/content/pages';
 import { error } from '@sveltejs/kit';
 
 export const prerender = true;

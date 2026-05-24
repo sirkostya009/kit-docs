@@ -1,6 +1,7 @@
-import { pages, slugs } from '$lib/server/content';
+import { slugs } from '$lib/server/content/entries';
+import { pages } from '$lib/server/content/pages';
 import { origin } from '$lib/server/origin';
-import { projectName } from '$lib/server/projectName';
+import { projectName } from '$lib/server/project-name';
 import { error } from '@sveltejs/kit';
 
 export const prerender = true;

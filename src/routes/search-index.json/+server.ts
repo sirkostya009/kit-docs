@@ -1,4 +1,4 @@
-import { pages } from '$lib/server/content';
+import { pages } from '$lib/server/content/pages';
 import MiniSearch from 'minisearch';
 
 export const prerender = true;
