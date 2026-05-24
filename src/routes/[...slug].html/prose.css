@@ -683,3 +683,18 @@
 .prose .tabs-panel > :last-child {
 	margin-bottom: 0;
 }
+
+.prose math[display='block'] {
+	font-size: var(--text-2xl);
+}
+
+.prose .equation {
+	margin: calc(var(--spacing) * 6) auto;
+	text-align: center;
+}
+
+.prose .equation > figcaption {
+	margin-top: calc(var(--spacing) * 2);
+	color: var(--foreground-muted);
+	font-size: var(--text-sm);
+}

@@ -1,18 +1,15 @@
-interface HastNode {
-	type: string;
-	tagName?: string;
-	properties?: Record<string, unknown>;
-	children?: HastNode[];
-}
+import type { HastElement, HastNode } from './utils';
+
+const isElement = (n: HastNode): n is HastElement => n.type === 'element';
 
 export default function rehypeWrapSections() {
 	return (tree: unknown) => {
 		const root = tree as { children: HastNode[] };
 		const wrapped: HastNode[] = [];
-		let section: HastNode | null = null;
+		let section: HastElement | null = null;
 
 		for (const node of root.children) {
-			if (node.type === 'element' && node.tagName === 'h2') {
+			if (isElement(node) && node.tagName === 'h2') {
 				if (section) wrapped.push(section);
 				const id = (node.properties?.id as string | undefined) ?? null;
 				if (id && node.properties) node.properties.id = `${id}-heading`;
@@ -31,7 +28,7 @@ export default function rehypeWrapSections() {
 				};
 				continue;
 			}
-			if (section) section.children!.push(node);
+			if (section) section.children.push(node);
 			else wrapped.push(node);
 		}
 		if (section) wrapped.push(section);

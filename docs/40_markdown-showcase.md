@@ -382,3 +382,13 @@ $$
 $$
 \frac{\partial}{\partial t}\,\psi(\mathbf{r}, t) = -\frac{i}{\hbar}\,\hat{H}\,\psi(\mathbf{r}, t)
 $$
+
+Wrap an equation in `:::equation[caption]` to render it as a captioned figure:
+
+:::equation[Gauss's law for electromagnetism, in differential form]
+
+$$
+\nabla \cdot \mathbf{E} = \frac{\rho}{\varepsilon_0}
+$$
+
+:::

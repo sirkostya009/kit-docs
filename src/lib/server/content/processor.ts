@@ -1,8 +1,8 @@
 import rehypeShiki from '@shikijs/rehype';
 import {
-	transformerMetaHighlight,
-	transformerNotationDiff,
-	transformerNotationHighlight,
+    transformerMetaHighlight,
+    transformerNotationDiff,
+    transformerNotationHighlight,
 } from '@shikijs/transformers';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeSlug from 'rehype-slug';
@@ -16,6 +16,7 @@ import { unified } from 'unified';
 import rehypeMath from './rehype/math';
 import rehypeWrapSections from './rehype/wrap-sections';
 import remarkAdmonitions from './remark/admonitions';
+import remarkEquation from './remark/equation';
 import remarkRoute from './remark/route';
 import remarkTabs from './remark/tabs';
 import { transformerLang, transformerLineNumbers, transformerTitle } from './shiki';
@@ -28,6 +29,7 @@ const processor = unified()
 	.use(remarkTabs)
 	.use(remarkAdmonitions)
 	.use(remarkRoute)
+	.use(remarkEquation)
 	.use(remarkRehype)
 	.use(rehypeSlug)
 	.use(rehypeAutolinkHeadings, {

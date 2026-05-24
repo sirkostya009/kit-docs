@@ -1,36 +1,5 @@
 import temml from 'temml';
-
-interface HastText {
-	type: 'text';
-	value: string;
-}
-interface HastRaw {
-	type: 'raw';
-	value: string;
-}
-interface HastElement {
-	type: 'element';
-	tagName: string;
-	properties?: Record<string, unknown>;
-	children: HastNode[];
-}
-type HastNode = HastText | HastRaw | HastElement | { type: string; children?: HastNode[] };
-
-function hasClass(props: Record<string, unknown> | undefined, cls: string): boolean {
-	if (!props) return false;
-	const v = props.className;
-	if (Array.isArray(v)) return v.includes(cls);
-	if (typeof v === 'string') return v.split(/\s+/).includes(cls);
-	return false;
-}
-
-function textOf(el: HastElement): string {
-	let s = '';
-	for (const c of el.children) {
-		if (c.type === 'text') s += (c as HastText).value;
-	}
-	return s;
-}
+import { hasClass, textOf, type HastElement, type HastNode, type HastRaw } from './utils';
 
 function render(tex: string, displayMode: boolean): HastRaw {
 	const html = temml.renderToString(tex, {
