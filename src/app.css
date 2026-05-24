@@ -63,10 +63,6 @@
 	--announce-h: 0px;
 }
 
-html:has(.announcement-bar) {
-	--announce-h: 2.5rem;
-}
-
 .nav-group > summary {
 	list-style: none;
 }

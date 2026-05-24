@@ -2,7 +2,7 @@
 	import { browser } from '$app/environment';
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { announcement } from '$lib/config';
+	import { announcements } from '$lib/announcements';
 	import { partition, type NavNode } from '$lib/nav';
 	import SearchModal from '$lib/SearchModal.svelte';
 	import '../app.css';
@@ -32,18 +32,23 @@
 		});
 	});
 
-	let announcementDismissed = $state(
-		browser && announcement
-			? localStorage.getItem('announcement-dismissed') === announcement.id
-			: false,
+	const DISMISSED_KEY = 'announcements-dismissed';
+	let dismissedIds = $state<string[]>(
+		browser ? (JSON.parse(localStorage.getItem(DISMISSED_KEY) || '[]') as string[]) : [],
 	);
-	const showAnnouncement = $derived(!!announcement && !announcementDismissed);
+	const visibleAnnouncements = $derived(announcements.filter((a) => !dismissedIds.includes(a.id)));
 
-	function dismissAnnouncement() {
-		if (!announcement) return;
-		localStorage.setItem('announcement-dismissed', announcement.id);
-		announcementDismissed = true;
+	function dismissAnnouncement(id: string) {
+		dismissedIds = [...dismissedIds, id];
+		localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissedIds));
 	}
+
+	$effect(() => {
+		document.documentElement.style.setProperty(
+			'--announce-h',
+			visibleAnnouncements.length ? `calc(${visibleAnnouncements.length} * 2.5rem)` : '0px',
+		);
+	});
 
 	type Theme = 'light' | 'dark' | 'system';
 	const themes: Theme[] = ['light', 'dark', 'system'];
@@ -271,42 +276,48 @@
 	<meta property="og:site_name" content="kit-docs" />
 </svelte:head>
 
-{#if showAnnouncement && announcement}
+{#if visibleAnnouncements.length}
 	<div
 		role="region"
-		aria-label="Site announcement"
-		class="announcement-bar bg-primary fixed top-0 right-0 left-0 z-50 h-(--announce-h) text-white"
+		aria-label="Site announcements"
+		class="fixed top-0 right-0 left-0 z-50 flex flex-col"
 	>
-		<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
-			<p class="truncate font-medium">
-				{announcement.text}
-				{#if announcement.href}
-					<a class="ml-1 underline underline-offset-2" href={announcement.href}>Learn more →</a>
-				{/if}
-			</p>
-			<button
-				type="button"
-				onclick={dismissAnnouncement}
-				class="hover:bg-primary-hover ml-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
-				aria-label="Dismiss announcement"
+		{#each visibleAnnouncements as announcement (announcement.id)}
+			<div
+				class="bg-primary-600 dark:bg-primary-800 border-b-primary-700 dark:border-b-primary-900 h-10 border-b text-white last:border-b-0"
 			>
-				<svg
-					xmlns="http://www.w3.org/2000/svg"
-					width="14"
-					height="14"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2.5"
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					aria-hidden="true"
-				>
-					<line x1="18" y1="6" x2="6" y2="18" />
-					<line x1="6" y1="6" x2="18" y2="18" />
-				</svg>
-			</button>
-		</div>
+				<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
+					<p class="truncate font-medium">
+						{announcement.text}
+						{#if announcement.href}
+							<a class="ml-1 underline underline-offset-2" href={announcement.href}>Learn more →</a>
+						{/if}
+					</p>
+					<button
+						type="button"
+						onclick={() => dismissAnnouncement(announcement.id)}
+						class="hover:bg-primary-700 dark:hover:bg-primary-900 ml-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+						aria-label="Dismiss announcement"
+					>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2.5"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
+							<line x1="18" y1="6" x2="6" y2="18" />
+							<line x1="6" y1="6" x2="18" y2="18" />
+						</svg>
+					</button>
+				</div>
+			</div>
+		{/each}
 	</div>
 {/if}
 
