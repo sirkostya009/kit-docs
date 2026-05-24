@@ -183,7 +183,10 @@
 			'(' + terms.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')',
 			'gi',
 		);
-		return text.replace(pattern, '<mark>$1</mark>');
+		return text.replace(
+			pattern,
+			'<mark class="bg-primary/25 text-inherit rounded-xs py-0 px-0.25">$1</mark>',
+		);
 	}
 </script>
 
@@ -404,12 +407,3 @@
 		</span>
 	</div>
 </dialog>
-
-<style>
-	:global(mark) {
-		background: color-mix(in oklab, var(--primary) 25%, transparent);
-		color: inherit;
-		border-radius: 0.125rem;
-		padding: 0 0.1em;
-	}
-</style>
