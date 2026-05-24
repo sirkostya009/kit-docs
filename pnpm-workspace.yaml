@@ -1,3 +1,4 @@
 ignoreScripts: true
 autoInstallPeers: false
 dedupePeers: true
+trustLockfile: true
