@@ -13,6 +13,6 @@ export function load({ params }) {
 		html: page.html,
 		metadata: page.metadata,
 		headings: page.headings,
-		lastModified: lastModified.get(params.slug) ?? null,
+		lastModified: lastModified.get(params.slug) ?? undefined,
 	};
 }
