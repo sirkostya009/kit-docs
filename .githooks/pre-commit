@@ -6,6 +6,30 @@ STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
 
 ESLINT_FILES=$(echo "$STAGED" | grep -E '\.(js|ts|svelte)$' || true)
 
+# all files with unstaged changes — checks must see only committed/staged content
+DIRTY=$(git diff --name-only)
+
+SNAPSHOT=
+if [ -n "$DIRTY" ]; then
+  SNAPSHOT=$(mktemp -d)
+  for f in $DIRTY; do
+    mkdir -p "$SNAPSHOT/$(dirname "$f")"
+    cp -a "$f" "$SNAPSHOT/$f"
+  done
+  # strip unstaged changes from working tree so format runs only on staged content
+  git checkout-index -f -- $DIRTY
+fi
+
+restore_wt() {
+  [ -n "$SNAPSHOT" ] || return 0
+  for f in $DIRTY; do
+    cp -a "$SNAPSHOT/$f" "$f"
+  done
+  rm -rf "$SNAPSHOT"
+  SNAPSHOT=
+}
+trap restore_wt EXIT
+
 pnpm svelte-kit sync
 pnpm prettier --log-level=warn -u --write --no-error-on-unmatched-pattern --cache $STAGED
 git add $STAGED
