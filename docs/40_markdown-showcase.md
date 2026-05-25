@@ -7,18 +7,18 @@ description: A stress test of markdown rendering with complex nested structures.
 
 ###### A stress test of every markdown feature worth caring about.[^1]
 
-[^1]: Some features require remark plugins — footnotes use `remark-footnotes@2`.
+[^1]: Some features require remark plugins — footnotes come from `remark-gfm`.
 
 ## Tables
 
 ### Basic
 
-| name    | type      | default | required |
-| ------- | --------- | ------- | -------- |
-| `slug`  | `string`  | —       | yes      |
-| `title` | `string`  | —       | no       |
-| `draft` | `boolean` | `false` | no       |
-| `order` | `number`  | `0`     | no       |
+| name     | type      | default | required |
+| -------- | --------- | ------- | -------- |
+| `id`     | `string`  | —       | yes      |
+| `email`  | `string`  | —       | yes      |
+| `active` | `boolean` | `true`  | no       |
+| `score`  | `number`  | `0`     | no       |
 
 ### Wide with alignment
 
@@ -44,23 +44,18 @@ description: A stress test of markdown rendering with complex nested structures.
 ### TypeScript
 
 ```typescript
-type PageMeta = {
-	title?: string;
-	description?: string;
-	draft?: boolean;
+type Page = {
+	html: string;
+	metadata: { title?: string; description?: string };
+	raw: string;
+	headings: Heading[];
 };
 
-async function getPage(slug: string): Promise<{
-	component: Component;
-	metadata: PageMeta;
-	raw: string;
-	lastModified: string | null;
-	publishedAt: string | null;
-} | null> {
-	const key = `../../docs/${slug}.md`;
-	if (!(key in modules)) return null;
-	const mod = await modules[key]();
-	return { component: mod.default, metadata: mod.metadata ?? {}, raw: '' };
+async function loadPage(entry: Entry): Promise<Page> {
+	const raw = await readRaw(entry);
+	const { data: metadata, content } = matter(raw);
+	const html = String(await processor.process(content));
+	return { html, metadata, raw, headings: extractHeadings(content) };
 }
 ```
 
@@ -124,20 +119,21 @@ pnpm build && pnpm preview
 ### Unordered with deep nesting
 
 - Rendering pipeline
-  - Vite transforms `.md` via mdsvex
-    - mdsvex parses frontmatter
-    - mdsvex compiles markdown to a Svelte component
-      - Svelte compiles the component to JS
-        - SvelteKit prerenderers the JS to HTML
+  - `pages.ts` reads each `.md` source
+    - `gray-matter` splits frontmatter from body
+    - `unified` runs the remark → rehype pipeline
+      - shiki highlights fenced code at build
+      - mermaid blocks render to inline SVG at build
+        - SvelteKit prerenders each route to static HTML
   - Tailwind Typography styles the output
 
 ### Task list
 
 - [x] markdown pages prerendered to HTML
 - [x] raw `.md` source served at `<slug>.md`
-- [x] syntax highlighting via mdsvex
+- [x] syntax highlighting via shiki
 - [x] dark mode
-- [ ] search
+- [x] search
 - [ ] versioned docs
 - [ ] i18n
 
@@ -337,7 +333,7 @@ function added() {} // [!code ++]
 
 ### Title bar
 
-```ts title="src/lib/server/content.ts"
+```ts title="src/lib/server/content/processor.ts"
 import { unified } from 'unified';
 
 const processor = unified().use(remarkParse).use(remarkGfm);

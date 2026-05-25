@@ -8,7 +8,9 @@
 //
 // not imported from src/, so it never enters any bundle. handrolled YAML-subset
 // parser — supports scalars (string/bool), block sequences (`- item`), and flow
-// sequences (`[a, b]`). that covers the documented schema in docs/20_frontmatter.md.
+// sequences (`[a, b]`). the schema below is the strict subset actually consumed
+// by the build; the parser keeps the wider surface area so adding a new field
+// is a one-line change.
 
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative, resolve } from 'node:path';
@@ -124,9 +126,6 @@ function stripQuotes(s) {
 	return s;
 }
 
-const ISO_8601 =
-	/^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$/;
-
 /**
  * @typedef {{ key: string, required?: boolean, type: 'string' | 'boolean' | 'array',
  *             nonEmpty?: boolean, validate?: (v: string) => string | null }} Rule
@@ -136,15 +135,6 @@ const ISO_8601 =
 const SCHEMA = [
 	{ key: 'title', required: true, type: 'string', nonEmpty: true },
 	{ key: 'description', required: true, type: 'string', nonEmpty: true },
-	{ key: 'draft', type: 'boolean' },
-	{ key: 'aliases', type: 'array' },
-	{ key: 'lang', type: 'string', nonEmpty: true },
-	{
-		key: 'lastModified',
-		type: 'string',
-		nonEmpty: true,
-		validate: (v) => (ISO_8601.test(v) ? null : 'expected ISO 8601 timestamp'),
-	},
 ];
 
 /**

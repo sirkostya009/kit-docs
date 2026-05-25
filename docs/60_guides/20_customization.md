@@ -22,4 +22,4 @@ Change `--font-sans` in the `@theme inline` block. Tailwind's `font-sans` utilit
 
 ## Code highlighting
 
-Shiki themes are configured in `src/lib/server/content.ts`. Default dual-theme is `github-light` / `github-dark`.
+Shiki themes are configured in `src/lib/server/content/processor.ts`. Default dual-theme is `github-light` / `github-dark`.

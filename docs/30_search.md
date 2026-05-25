@@ -1,6 +1,6 @@
 ---
 title: Search
-description: Client-side full-text search powered by a prerendered index.
+description: Client-side full-text search powered by a prebuilt MiniSearch index.
 ---
 
 # Search
@@ -9,39 +9,66 @@ Press <kbd>⌘ K</kbd> (or <kbd>Ctrl K</kbd> on Windows / Linux) anywhere in the
 
 ## How it works
 
-At build time, `src/routes/search-index.json/+server.ts` walks every markdown source, strips frontmatter and code fences, and emits a single JSON document under `/search-index.json`. The browser fetches that file on first focus and runs a fuzzy match in memory — no server round-trip, no third-party dependency.
+At build time, `src/routes/search-index.json/+server.ts` walks every markdown source, strips frontmatter, fenced and inline code, and markdown syntax characters, then feeds each page into a [MiniSearch](https://github.com/lucaong/minisearch) index. The serialized index and the sorted list of top-level sections are emitted as a single JSON document under `/search-index.json`.
 
 ```typescript
-const entries = await fetch('/search-index.json').then((r) => r.json());
+const res = await fetch('/search-index.json');
+const data = await res.json();
+mini = MiniSearch.loadJS(data.index, MINI_OPTIONS);
 ```
 
-Each entry has the shape:
+Each indexed document has the shape:
 
 ```typescript
 {
+	id: string; // === slug
 	slug: string; // e.g. "guides/installation"
+	section: string; // first path segment, e.g. "guides" — '' for root pages
 	title: string; // page title from frontmatter
 	description: string; // from frontmatter
-	headings: Array<{
-		// h2 + h3 only
-		id: string; //   slugified anchor
-		text: string; //   raw heading text
-	}>;
+	headings: {
+		id: string;
+		text: string;
+	}
+	[]; // h2 + h3
+	headingsText: string; // joined for full-text indexing
 	content: string; // body text, ≤ 8000 chars
 }
 ```
 
+## Ranking
+
+The modal calls `mini.search(query, ...)` with:
+
+```typescript
+{
+	fuzzy: 0.2,
+	prefix: true,
+	boost: { title: 3, headingsText: 2 },
+	filter: activeSection ? (r) => r.section === activeSection : undefined,
+}
+```
+
+MiniSearch handles ranking — there is no manual cascade. `title` matches outweigh `headingsText`, which outweigh `description` and `content`. Prefix matching lets `"adm"` find "Admonitions"; the 20% fuzziness budget tolerates a typo or two. The top 10 hits are kept and a snippet is extracted around the first matched term.
+
 ## Index size
 
-The index is shipped as one prerendered JSON file. For the default content set it weighs ~6 KB gzipped. Three knobs control growth:
+The index ships as one prerendered JSON file. Two knobs control growth:
 
-| Knob             | Where                                  | Default |
-| ---------------- | -------------------------------------- | ------- |
-| Per-page content | `text.slice(0, 8000)` in `+server.ts`  | 8000 ch |
-| Headings depth   | `h2[id], h3[id]` selector in scrollspy | h2 + h3 |
-| Excluded pages   | `draft: true` in frontmatter           | empty   |
+| Knob             | Where                                 | Default |
+| ---------------- | ------------------------------------- | ------- |
+| Per-page content | `text.slice(0, 8000)` in `+server.ts` | 8000 ch |
+| Headings depth   | regex `^(#{2,3})` in `headings.ts`    | h2 + h3 |
 
-If your site grows past a few hundred pages, swap the in-memory match for a prebuilt index — [`flexsearch`](https://github.com/nextapps-de/flexsearch) or [`minisearch`](https://github.com/lucaong/minisearch) both work without a server. Plug the index into `SearchModal.svelte` and keep the same `/search-index.json` endpoint.
+Both live in `src/routes/search-index.json/+server.ts` and `src/lib/server/content/headings.ts` respectively.
+
+## Section filter
+
+The pill above the input lets the user scope results to a top-level section (e.g. "guides", "advanced"). The list comes from the `sections` array in the index payload — every distinct first path segment, sorted. Root-level pages (no slash in the slug) have `section: ''` and are excluded from the pill row.
+
+## Recent searches
+
+The last five queries are persisted in `localStorage` under the key `kit-docs:recent-searches` and shown when the modal opens with an empty query. The "Clear" button wipes the key.
 
 ## Keyboard shortcuts
 
@@ -52,29 +79,6 @@ If your site grows past a few hundred pages, swap the in-memory match for a preb
 | <kbd>↑</kbd> / <kbd>↓</kbd> | Move selection                   |
 | <kbd>Enter</kbd>            | Open the highlighted result      |
 | <kbd>Esc</kbd>              | Close the modal                  |
-
-## Ranking
-
-The modal scores matches in this order:
-
-1. Exact title match.
-2. Title substring match.
-3. Heading match (h2 over h3).
-4. Description match.
-5. Body match.
-
-Results from the same page are deduplicated to the highest-ranked match.
-
-## Customizing
-
-To bias results toward a particular section (for example, a "Reference" group should outrank "Blog"), extend the index payload with a `weight` field and consume it in the scoring step:
-
-```typescript
-return {
-	...entry,
-	weight: slug.startsWith('reference/') ? 2 : 1,
-};
-```
 
 > **Tip:** The search modal lives in `src/lib/SearchModal.svelte`. It's a single component — copy it into your own project if you fork kit-docs.
 

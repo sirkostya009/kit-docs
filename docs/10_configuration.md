@@ -11,6 +11,6 @@ All configuration lives in `svelte.config.js`.
 
 This project uses `adapter-static` for fully static output.
 
-## mdsvex
+## Markdown pipeline
 
-Markdown is processed via [mdsvex](https://mdsvex.com), which lets you use Svelte components inside `.md` files.
+Markdown is processed by a [unified](https://unifiedjs.com) pipeline configured in `src/lib/server/content/processor.ts`. Remark handles parsing and GFM/math/directive extensions; rehype handles slugging, code highlighting via [shiki](https://shiki.style), and SSR for math and mermaid diagrams.

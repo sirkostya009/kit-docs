@@ -5,7 +5,7 @@ description: Configure Shiki themes, languages, and code-block decorators.
 
 # Syntax highlighting
 
-Code blocks are rendered by [Shiki](https://shiki.style) via the `@shikijs/rehype` plugin. The configuration lives in `src/lib/server/content.ts`.
+Code blocks are rendered by [Shiki](https://shiki.style) via the `@shikijs/rehype` plugin. The configuration lives in `src/lib/server/content/processor.ts`.
 
 ```typescript
 .use(rehypeShiki, {
@@ -40,29 +40,11 @@ themes: {
 }
 ```
 
-## Adding languages
+## Languages
 
-Shiki ships with grammar files for ~200 languages — all auto-loaded the first time they appear in a code fence. If you author content in an exotic language, you can preload it to avoid the first-paint cost:
+Shiki ships with grammar files for ~200 languages, all loaded on demand the first time they appear in a code fence. Common aliases work out of the box: `ts` → `typescript`, `sh` → `bash`, `yml` → `yaml`. The full list is in the [Shiki language registry](https://shiki.style/languages).
 
-```typescript
-.use(rehypeShiki, {
-  langs: ['typescript', 'svelte', 'gleam', 'roc'],
-  themes: { /* ... */ }
-})
-```
-
-### Aliases
-
-Common aliases are recognized: `ts` → `typescript`, `sh` → `bash`, `yml` → `yaml`. The full list is in the [Shiki language registry](https://shiki.style/languages).
-
-For ad-hoc aliases, register them inline:
-
-```typescript
-langAlias: {
-  shell: 'bash',
-  cfg: 'ini'
-}
-```
+Unknown languages fall back to plain text — `defaultLanguage` and `fallbackLanguage` are both set to `'text'` so an unrecognized fence never throws.
 
 ## Code block decorators
 
@@ -84,7 +66,7 @@ const d = 4;
 | `title="..."`     | Render a title bar above the block           |
 | `showLineNumbers` | Show 1-indexed line numbers in a left gutter |
 
-Highlights and diff annotations come from `transformerNotationHighlight`, `transformerNotationDiff`, and `transformerMetaHighlight`. Title bars and line numbers come from custom transformers in `src/lib/server/content.ts` (`transformerTitle`, `transformerLineNumbers`).
+Highlights and diff annotations come from `transformerNotationHighlight`, `transformerNotationDiff`, and `transformerMetaHighlight`. Title bars, line numbers, and the language badge come from custom transformers in `src/lib/server/content/shiki/` (`transformerTitle`, `transformerLineNumbers`, `transformerLang`).
 
 ## Inline highlighting
 
@@ -94,7 +76,7 @@ Wrap inline code with a language using the `{:lang}` annotation:
 The function `fetch(url) {:js}` returns a Promise.
 ```
 
-Renders as: `fetch(url) {:js}` — tokens get the same dual-theme coloring as fenced blocks. This is enabled in `content.ts` via `inline: 'tailing-curly-colon'` on the rehype plugin.
+Renders as: `fetch(url) {:js}` — tokens get the same dual-theme coloring as fenced blocks. This is enabled in `processor.ts` via `inline: 'tailing-curly-colon'` on the rehype plugin.
 
 ## Code block chrome
 

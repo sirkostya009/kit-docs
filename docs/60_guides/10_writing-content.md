@@ -102,7 +102,7 @@ function added() {} // [!code ++]
 Add a `title="..."` to the meta string to render a header bar above the block:
 
 ````markdown
-```ts title="src/lib/server/content.ts"
+```ts title="src/lib/server/content/processor.ts"
 import { unified } from 'unified';
 ```
 ````
@@ -182,7 +182,7 @@ Internal links should use the `.html` suffix:
 See [installation](/guides/installation.html).
 ```
 
-External links open in the same tab unless you add `{target="_blank"}` (when you enable [remark-directive](https://github.com/remarkjs/remark-directive)). Autolinks work for bare URLs.
+External links open in the same tab. Autolinks work for bare URLs.
 
 ## Images
 
@@ -192,11 +192,7 @@ Drop images in `static/` and reference them with an absolute path:
 ![QA Sphere logo](/img/logo.png)
 ```
 
-For images alongside the markdown source, use a relative path — Vite resolves them at build time:
-
-```markdown
-![diagram](./diagram.svg)
-```
+Markdown is read as a raw string, so relative paths like `./diagram.svg` are not resolved by the build — paste the file under `static/` and reference it absolutely.
 
 ## Footnotes
 

@@ -1,13 +1,13 @@
 ---
 title: Internationalization
-description: Translate pages into multiple languages with locale-prefixed routes.
+description: Directory-based locale layout for translated content.
 ---
 
 # Internationalization
 
-kit-docs ships with a directory-based i18n layout: drop translations into a locale folder and they show up under a matching URL prefix.
+kit-docs uses a directory-based layout for translations: drop pages into a locale subdirectory and they're served under a matching URL prefix.
 
-> **Note:** The locale switcher UI and translation-aware sidebar grouping are still in progress. The directory convention below is forward-compatible — content authored today will Just Work once the runtime catches up.
+> **Note:** Only the routing convention is wired today. There is no built-in locale switcher, no `<html lang>` toggle, no sidebar grouping per locale, and no `<link rel="alternate" hreflang>` emission. Treat what follows as the foundation you'd build the rest of the runtime on top of.
 
 ## Directory layout
 
@@ -24,7 +24,7 @@ docs/
     getting-started.md         → /ja/getting-started.html
 ```
 
-The default locale lives at the root — no prefix. Every other locale gets its own subdirectory whose name is the locale code.
+The default locale lives at the root — no prefix. Every other locale gets its own subdirectory whose name is the locale code. Subdirectories are picked up automatically by the glob in `src/lib/server/content/entries.ts`; the slug becomes `<locale>/<page>`.
 
 ## Locale codes
 
@@ -39,78 +39,24 @@ Use [BCP 47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) tags. Examples:
 | `zh-Hans` | Simplified Chinese   |
 | `pt-BR`   | Brazilian Portuguese |
 
-## Per-page lang
-
-Each translation should set `lang` in its frontmatter so the rendered `<html lang>` attribute is correct:
-
-```markdown
----
-title: Pour commencer
-description: Comment démarrer rapidement
-lang: fr
----
-```
-
-This is what screen readers and search engines pick up. See [frontmatter](/frontmatter.html) for the full field list.
-
-## Linking between translations
-
-Use the `alternates` frontmatter array to declare sibling translations of a page. The runtime emits `<link rel="alternate" hreflang="…">` tags so search engines can serve the right variant.
-
-```yaml
-alternates:
-  - lang: en
-    href: /getting-started.html
-  - lang: fr
-    href: /fr/getting-started.html
-  - lang: ja
-    href: /ja/getting-started.html
-```
-
-When a translation is missing, the locale switcher falls back to the default locale and emits a `data-fallback` attribute on the link for analytics.
-
-## Default locale
-
-Configure the default locale in `svelte.config.js`:
-
-```javascript
-export default {
-	kit: {
-		// ...
-	},
-	// forward-compatible config — read by the runtime once i18n lands
-	i18n: {
-		defaultLocale: 'en',
-		locales: ['en', 'fr', 'ja'],
-	},
-};
-```
-
-Pages not in a locale subdirectory are treated as `defaultLocale`. Switching the default later requires renaming directories — keep the choice stable.
-
 ## Translation workflow
 
-A typical workflow:
-
 1. Author the page in the default locale under `docs/`.
-2. Run `pnpm i18n:scaffold fr` to copy stubs into `docs/fr/` with `draft: true` set.
-3. Translate the file, drop the `draft` flag, and rebuild.
-
-> **Tip:** Translated pages are excluded from the sitemap until `draft: false`. This keeps half-finished translations out of search engines.
+2. Copy the file into `docs/<locale>/` and translate in place.
+3. Rebuild — locale-prefixed routes are picked up automatically.
 
 ## RTL languages
 
-For right-to-left locales (Arabic, Hebrew, Persian), set `direction: rtl` in the locale's frontmatter or in the global config. The starter layout uses logical CSS properties (`padding-inline-start`, `margin-inline-end`) so the chrome flips automatically.
+The starter layout uses logical CSS properties (`padding-inline-start`, `margin-inline-end`) throughout, so the chrome flips automatically when `dir="rtl"` is set on `<html>`. The flip itself is not automatic — you'd have to set the attribute yourself, e.g. from a `+layout.svelte` that inspects the route's locale prefix.
 
-```yaml
-lang: ar
-direction: rtl
-```
+## What's not built in
 
-## What's not (yet) supported
+- Locale switcher UI.
+- Per-locale `<html lang>` / `dir` toggling.
+- `<link rel="alternate" hreflang="…">` tags in the head.
+- Sidebar grouping or filtering by locale.
+- Translation-aware search (the index mixes all locales).
+- Date and number formatting helpers inside markdown.
+- Pluralization rules in nav labels — sidebar labels come straight from the page title.
 
-- Per-locale theming or custom fonts. Override `--font-sans` globally for now.
-- Date and number formatting helpers inside markdown. Reach for a Svelte component if you need locale-aware rendering inline.
-- Pluralization rules in nav labels. Sidebar labels come straight from the page title.
-
-If you need any of the above today, drop a comment on the i18n tracking issue with your use case.
+If you need any of these, they're plain Svelte / SvelteKit additions on top of the routing convention above.

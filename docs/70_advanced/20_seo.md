@@ -9,17 +9,16 @@ Every page is prerendered to static HTML, so search engines see the same content
 
 ## Meta tags
 
-The page layout in `[...slug].html/+page.svelte` emits a standard set of tags from frontmatter:
+The page layout in `[...slug].html/+page.svelte` emits the following tags into `<svelte:head>` for every doc page:
 
-```svelte
-<svelte:head>
-	<title>{title}</title>
-	<meta name="description" content={data.metadata.description ?? ''} />
-	<meta property="og:title" content={title} />
-	<meta property="og:description" content={data.metadata.description ?? ''} />
-	<meta property="og:type" content="article" />
-</svelte:head>
-```
+- `<title>` — `${frontmatter.title} · kit-docs`
+- `<link rel="canonical">` — the absolute URL derived from `ORIGIN`
+- `<link rel="alternate" type="text/markdown">` — the raw `.md` companion
+- `<meta name="description">`
+- `<meta property="og:title">`, `og:description`, `og:type`, `og:url`, `og:locale`
+- `<meta name="twitter:card">`, `twitter:title`, `twitter:description`
+- `<meta property="article:modified_time">` and `<meta name="last-modified">` (when the file has a git history)
+- A JSON-LD `<script type="application/ld+json">` block — see [structured data](#structured-data) below
 
 The root layout adds the site name once:
 
@@ -27,28 +26,11 @@ The root layout adds the site name once:
 <meta property="og:site_name" content="kit-docs" />
 ```
 
-The page title is composed as `${frontmatter.title} · kit-docs`. Override the suffix by editing the `title` derivation in `+page.svelte`.
+Override the title suffix by editing the `title` derivation in `+page.svelte`.
 
 ## Open Graph images
 
-Drop a per-page OG image into `static/og/<slug>.png` and add a frontmatter field:
-
-```yaml
-ogImage: /og/getting-started.png
-```
-
-Then read it in the page head:
-
-```svelte
-{#if data.metadata.ogImage}
-	<meta property="og:image" content={data.metadata.ogImage} />
-	<meta name="twitter:card" content="summary_large_image" />
-{/if}
-```
-
-For automatic OG image generation, point a build step at [`@vercel/og`](https://vercel.com/docs/og-image-generation) or [Satori](https://github.com/vercel/satori) and write the output to `static/og/` before `pnpm build` runs.
-
-> **Tip:** The recommended OG dimensions are 1200×630. Keep the file under 1 MB so social embedders don't drop it.
+There is no built-in OG image pipeline — the head section above does not emit `og:image` or `twitter:image`. If you want per-page social cards, point a build step at [`@vercel/og`](https://vercel.com/docs/og-image-generation) or [Satori](https://github.com/vercel/satori), write the output to `static/og/<slug>.png`, and add the corresponding `<meta>` tags in `+page.svelte` (1200×630 is the recommended dimension; keep files under 1 MB).
 
 ## Canonical URLs
 
@@ -87,29 +69,31 @@ const priority = path.startsWith('/reference/') ? '0.9' : '0.6';
 
 ### `lastmod`
 
-The default sitemap does not emit `<lastmod>`. To add it, plumb the git timestamp through `getPage()` (or read `lastModified` from frontmatter — see [frontmatter](/frontmatter.html)) and append it to each entry:
-
-```typescript
-`\t\t<lastmod>${page.lastModified}</lastmod>`;
-```
+Each entry includes a `<lastmod>` element derived from the file's most recent git commit timestamp (see `lastModified` in `src/lib/server/content/pages.ts`). Pages with no git history (e.g. uncommitted local edits) skip the element entirely.
 
 Most search engines treat `lastmod` as a hint, not a guarantee.
 
 ## Structured data
 
-For docs that should appear as rich snippets, add a `<script type="application/ld+json">` block in the page head. The minimal recipe for an article:
+`+page.svelte` already emits a JSON-LD block for every doc page via the `ldScript` derivation:
 
-```svelte
-{@html `<script type="application/ld+json">${JSON.stringify({
+```typescript
+{
 	'@context': 'https://schema.org',
 	'@type': 'TechArticle',
-	headline: data.metadata.title,
-	description: data.metadata.description,
-	dateModified: data.metadata.lastModified,
-})}</script>`}
+	headline: pageTitle,
+	...(description && { description }),
+	url: canonicalUrl,
+	mainEntityOfPage: canonicalUrl,
+	inLanguage: 'en',
+	isPartOf: { '@type': 'WebSite', name: 'kit-docs', url: data.origin },
+	...(data.lastModified && { dateModified: data.lastModified }),
+}
 ```
 
-> **Warning:** Use `{@html}` only with data you fully control. Frontmatter values are user-authored — fine for your own site, risky if you accept community contributions without sanitization.
+Extend the object literal to add fields (author, publisher, image). Other schema types — `BlogPosting`, `HowTo`, `FAQPage` — are a `'@type'` swap away.
+
+> **Warning:** The block is rendered with `{@html}`. Frontmatter values are user-authored — fine for your own site, risky if you accept community contributions without sanitization.
 
 ## robots.txt
 

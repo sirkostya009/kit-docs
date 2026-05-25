@@ -18,4 +18,6 @@ pnpm dev
 
 - markdown pages prerendered to static HTML
 - raw `.md` source available at `<page-name>.md`
-- syntax highlighting via mdsvex
+- syntax highlighting via shiki
+- math, mermaid diagrams, admonitions, and tabs out of the box
+- client-side search and auto-generated TOC
