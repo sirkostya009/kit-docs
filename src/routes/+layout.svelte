@@ -207,17 +207,20 @@
 	</a>
 {/snippet}
 
-{#snippet themeButton()}
+{#snippet themeButton(size: 'sm' | 'lg' = 'sm')}
 	<button
-		class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+		class={[
+			'text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors',
+			size === 'lg' ? 'h-11 w-11' : 'h-9 w-9',
+		]}
 		onclick={cycleTheme}
 		aria-label="toggle theme ({theme})"
 	>
 		{#if theme === 'system'}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
+				width={size === 'lg' ? 20 : 16}
+				height={size === 'lg' ? 20 : 16}
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -233,8 +236,8 @@
 		{:else if theme === 'dark'}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
+				width={size === 'lg' ? 20 : 16}
+				height={size === 'lg' ? 20 : 16}
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -248,8 +251,8 @@
 		{:else}
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				width="16"
-				height="16"
+				width={size === 'lg' ? 20 : 16}
+				height={size === 'lg' ? 20 : 16}
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -324,16 +327,16 @@
 <header
 	class="bg-surface/80 border-border fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-xl md:hidden"
 >
-	<div class="flex h-14 items-center gap-3 px-4">
+	<div class="flex h-16 items-center gap-3 px-4">
 		<button
-			class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+			class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-11 w-11 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
 			onclick={() => (sidebarOpen = !sidebarOpen)}
 			aria-label="toggle sidebar"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
-				width="18"
-				height="18"
+				width="22"
+				height="22"
 				viewBox="0 0 24 24"
 				fill="none"
 				stroke="currentColor"
@@ -355,14 +358,14 @@
 		{@render logo()}
 		<div class="ml-auto flex items-center gap-1">
 			<button
-				class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+				class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-11 w-11 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
 				onclick={() => (searchOpen = true)}
 				aria-label="search"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
-					width="16"
-					height="16"
+					width="20"
+					height="20"
 					viewBox="0 0 24 24"
 					fill="none"
 					stroke="currentColor"
@@ -375,7 +378,7 @@
 					<line x1="21" y1="21" x2="16.65" y2="16.65" />
 				</svg>
 			</button>
-			{@render themeButton()}
+			{@render themeButton('lg')}
 		</div>
 	</div>
 </header>
@@ -533,7 +536,7 @@
 
 {#if sidebarOpen}
 	<aside
-		class="bg-surface fixed top-(--announce-h) right-0 bottom-14 left-0 z-50 flex flex-col gap-3 overflow-y-auto p-4 md:hidden"
+		class="bg-surface fixed top-(--announce-h) right-0 bottom-16 left-0 z-50 flex flex-col gap-3 overflow-y-auto p-4 md:hidden"
 	>
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
 			<p
@@ -547,7 +550,7 @@
 {/if}
 
 <div
-	class="mx-auto flex min-h-screen max-w-(--layout-width) pt-(--announce-h) pb-14 pl-(--sidebar-w) transition-[padding] duration-200 ease-out md:pb-0"
+	class="mx-auto flex min-h-screen max-w-(--layout-width) pt-(--announce-h) pb-16 pl-(--sidebar-w) transition-[padding] duration-200 ease-out md:pb-0"
 >
 	<main class="w-full min-w-0 flex-1">
 		{@render children()}
