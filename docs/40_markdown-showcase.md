@@ -392,3 +392,52 @@ $$
 $$
 
 :::
+
+---
+
+## Diagrams
+
+Mermaid diagrams render to inline SVG at build time.
+
+### Flow
+
+```mermaid
+%% Content pipeline from markdown source to rendered HTML.
+flowchart LR
+  source --> parser --> ast --> renderer --> html
+  renderer --> cache
+  cache -.-> renderer
+```
+
+### Sequence
+
+```mermaid
+%% Cache-through path on a page request.
+sequenceDiagram
+  participant C as client
+  participant S as server
+  participant Ca as cache
+  participant D as db
+  C->>S: GET /api/page
+  S->>Ca: read(slug)
+  Ca-->>S: miss
+  S->>D: query
+  D-->>S: rows
+  S->>Ca: write(slug)
+  S-->>C: 200 OK
+```
+
+### Class
+
+```mermaid
+classDiagram
+  class Processor {
+    +parse(source) Tree
+    +transform(tree) Tree
+    -cache Map
+  }
+  class Renderer {
+    +render(tree) string
+  }
+  Processor --> Renderer
+```

@@ -698,3 +698,22 @@
 	color: var(--foreground-muted);
 	font-size: var(--text-sm);
 }
+
+.prose .mermaid-diagram {
+	margin: calc(var(--spacing) * 6) auto;
+	container-type: inline-size;
+}
+
+.prose .mermaid-diagram svg {
+	display: block;
+	margin-inline: auto;
+	max-width: 100%;
+	height: auto;
+}
+
+.prose .mermaid-diagram > figcaption {
+	margin-top: calc(var(--spacing) * 2);
+	color: var(--foreground-muted);
+	font-size: clamp(var(--text-xs), 2cqw, var(--text-sm));
+	text-align: center;
+}

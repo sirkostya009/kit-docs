@@ -1,8 +1,8 @@
 import rehypeShiki from '@shikijs/rehype';
 import {
-    transformerMetaHighlight,
-    transformerNotationDiff,
-    transformerNotationHighlight,
+	transformerMetaHighlight,
+	transformerNotationDiff,
+	transformerNotationHighlight,
 } from '@shikijs/transformers';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import rehypeSlug from 'rehype-slug';
@@ -14,6 +14,7 @@ import remarkParse from 'remark-parse';
 import remarkRehype from 'remark-rehype';
 import { unified } from 'unified';
 import rehypeMath from './rehype/math';
+import rehypeMermaid from './rehype/mermaid';
 import rehypeWrapSections from './rehype/wrap-sections';
 import remarkAdmonitions from './remark/admonitions';
 import remarkEquation from './remark/equation';
@@ -38,6 +39,7 @@ const processor = unified()
 	})
 	.use(rehypeWrapSections)
 	.use(rehypeMath)
+	.use(rehypeMermaid)
 	.use(rehypeShiki, {
 		themes: { light: 'github-light', dark: 'github-dark' },
 		defaultColor: false,

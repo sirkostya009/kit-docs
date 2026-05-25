@@ -20,4 +20,5 @@ function frontmatterCheck(): Plugin {
 
 export default defineConfig({
 	plugins: [frontmatterCheck(), tailwindcss(), sveltekit()],
+	ssr: { external: ['mermaid-isomorphic', 'playwright'] },
 });
