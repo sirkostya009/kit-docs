@@ -386,7 +386,7 @@
 		{#if data.headings.length > 0}
 			<details
 				bind:open={mobileTocOpen}
-				class="group border-border-subtle bg-surface-raised sticky top-3.25 z-10 mb-6 rounded-lg border [interpolate-size:allow-keywords] details-content:overflow-clip details-content:opacity-0 details-content:[transition:opacity_0.2s_ease,block-size_0.2s_ease,content-visibility_0.2s_allow-discrete] details-content:block-0 open:details-content:opacity-100 open:details-content:block-auto lg:hidden starting:open:details-content:opacity-0 starting:open:details-content:block-0"
+				class="group border-border-subtle bg-surface-raised sticky top-[calc(var(--announce-h)+(--spacing(3.25)))] z-10 mb-6 rounded-lg border [interpolate-size:allow-keywords] details-content:overflow-clip details-content:opacity-0 details-content:[transition:opacity_0.2s_ease,block-size_0.2s_ease,content-visibility_0.2s_allow-discrete] details-content:block-0 open:details-content:opacity-100 open:details-content:block-auto lg:hidden starting:open:details-content:opacity-0 starting:open:details-content:block-0"
 			>
 				<summary
 					class="text-foreground hover:text-foreground flex cursor-pointer list-none items-center gap-2.5 px-4 py-2.5 font-medium select-none marker:hidden"

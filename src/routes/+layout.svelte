@@ -287,7 +287,7 @@
 				class="bg-primary-600 dark:bg-primary-800 border-b-primary-700 dark:border-b-primary-900 h-10 border-b text-white last:border-b-0"
 			>
 				<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
-					<p class="truncate font-medium">
+					<p class="min-w-0 flex-1 truncate font-medium">
 						{announcement.text}
 						{#if announcement.href}
 							<a class="ml-1 underline underline-offset-2" href={announcement.href}>Learn more →</a>
@@ -296,7 +296,7 @@
 					<button
 						type="button"
 						onclick={() => dismissAnnouncement(announcement.id)}
-						class="hover:bg-primary-700 dark:hover:bg-primary-900 ml-auto flex h-7 w-7 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+						class="hover:bg-primary-700 dark:hover:bg-primary-900 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
 						aria-label="Dismiss announcement"
 					>
 						<svg
