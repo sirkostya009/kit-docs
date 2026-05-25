@@ -43,13 +43,6 @@
 		localStorage.setItem(DISMISSED_KEY, JSON.stringify(dismissedIds));
 	}
 
-	$effect(() => {
-		document.documentElement.style.setProperty(
-			'--announce-h',
-			visibleAnnouncements.length ? `calc(${visibleAnnouncements.length} * 2.5rem)` : '0px',
-		);
-	});
-
 	type Theme = 'light' | 'dark' | 'system';
 	const themes: Theme[] = ['light', 'dark', 'system'];
 
@@ -278,6 +271,12 @@
 <svelte:head>
 	<meta property="og:site_name" content="kit-docs" />
 </svelte:head>
+
+<svelte:body
+	style:--announce-h={visibleAnnouncements.length
+		? `calc(${visibleAnnouncements.length} * var(--spacing) * 10)`
+		: '0px'}
+></svelte:body>
 
 {#if visibleAnnouncements.length}
 	<div

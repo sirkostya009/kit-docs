@@ -359,15 +359,15 @@
 	<div class="mx-auto max-w-3xl min-w-0 flex-1 px-4 py-8 md:px-8 md:py-12 lg:mx-0 lg:max-w-none">
 		{#if crumbs.length > 0}
 			<nav
-				class="text-foreground-subtle mb-4 flex flex-wrap items-center gap-1.5 text-xs capitalize"
+				class="text-foreground-subtle mb-4 flex flex-wrap items-center gap-2 text-sm capitalize"
 				aria-label="breadcrumb"
 			>
 				<a href="/" class="hover:text-foreground no-underline transition-colors">Docs</a>
 				{#each crumbs as crumb (crumb.label)}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
-						width="10"
-						height="10"
+						width="12"
+						height="12"
 						viewBox="0 0 24 24"
 						fill="none"
 						stroke="currentColor"
