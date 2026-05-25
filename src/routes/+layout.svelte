@@ -289,10 +289,13 @@
 				class="bg-primary-600 dark:bg-primary-800 border-b-primary-700 dark:border-b-primary-900 h-10 border-b text-white last:border-b-0"
 			>
 				<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
-					<p class="min-w-0 flex-1 truncate font-medium">
-						{announcement.text}
+					<p class="flex min-w-0 flex-1 items-baseline gap-1 font-medium">
+						<span class="min-w-0 truncate">{announcement.text}</span>
 						{#if announcement.href}
-							<a class="ml-1 underline underline-offset-2" href={announcement.href}>Learn more →</a>
+							<a
+								class="shrink-0 whitespace-nowrap underline underline-offset-2"
+								href={announcement.href}>Learn more →</a
+							>
 						{/if}
 					</p>
 					<button
