@@ -564,6 +564,12 @@
 	transition: opacity var(--default-transition-duration) ease;
 }
 
+@media (max-width: 767px) {
+	.prose pre.shiki[data-lang]::after {
+		content: none;
+	}
+}
+
 .prose pre.shiki[data-lang]:hover::after,
 .prose pre.shiki[data-lang]:focus-within::after,
 .prose pre.shiki[data-wrap][data-lang]::after {
