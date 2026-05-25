@@ -1,6 +1,4 @@
-import type { HastElement, HastNode } from './utils';
-
-const isElement = (n: HastNode): n is HastElement => n.type === 'element';
+import { isElement, type HastElement, type HastNode } from './utils';
 
 export default function rehypeWrapSections() {
 	return (tree: unknown) => {

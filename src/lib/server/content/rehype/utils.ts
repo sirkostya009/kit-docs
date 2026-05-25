@@ -17,6 +17,8 @@ export interface HastElement {
 
 export type HastNode = HastText | HastRaw | HastElement | { type: string; children?: HastNode[] };
 
+export const isElement = (n: HastNode): n is HastElement => n.type === 'element';
+
 export function hasClass(props: Record<string, unknown> | undefined, cls: string): boolean {
 	if (!props) return false;
 	const v = props.className;

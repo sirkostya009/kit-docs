@@ -16,6 +16,7 @@ import { unified } from 'unified';
 import rehypeMath from './rehype/math';
 import rehypeMermaid from './rehype/mermaid';
 import rehypeWrapSections from './rehype/wrap-sections';
+import rehypeWrapTables from './rehype/wrap-tables';
 import remarkAdmonitions from './remark/admonitions';
 import remarkEquation from './remark/equation';
 import remarkRoute from './remark/route';
@@ -38,6 +39,7 @@ const processor = unified()
 		content: { type: 'text', value: '#' },
 	})
 	.use(rehypeWrapSections)
+	.use(rehypeWrapTables)
 	.use(rehypeMath)
 	.use(rehypeMermaid)
 	.use(rehypeShiki, {
