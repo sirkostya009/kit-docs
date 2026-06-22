@@ -2,7 +2,7 @@
 
 FROM node:22-alpine AS builder
 WORKDIR /app
-RUN apk add --no-cache git brotli
+RUN apk add --no-cache git
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
@@ -10,10 +10,6 @@ RUN pnpm install --frozen-lockfile
 
 COPY . .
 RUN pnpm build
-
-# adapter-static doesnt precompress .md files for some reason
-RUN find build -name '*.md' -exec sh -c \
-    'for f; do brotli -Z -k "$f" && gzip -9 -k "$f"; done' _ {} +
 
 # restore timestamps from commits so that nginx can build stable ETag and
 # Last-Modified headers.
