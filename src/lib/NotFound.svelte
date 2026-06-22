@@ -1,24 +1,24 @@
 <article class="px-4 py-16 md:px-12 md:py-24">
 	<header class="max-w-2xl">
 		<p
-			class="border-border-subtle bg-surface-raised text-foreground-muted mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium tracking-wide"
+			class="mb-5 inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-3 py-1 text-xs font-medium tracking-wide text-foreground-muted"
 		>
-			<span aria-hidden="true" class="bg-primary inline-block size-1.5 rounded-full"></span>
+			<span aria-hidden="true" class="inline-block size-1.5 rounded-full bg-primary"></span>
 			404 · not found
 		</p>
 		<h1
-			class="text-foreground mt-0 mb-4 text-4xl leading-[1.1] font-bold tracking-tight md:text-5xl"
+			class="mt-0 mb-4 text-4xl leading-[1.1] font-bold tracking-tight text-foreground md:text-5xl"
 		>
 			This page doesn't exist
 		</h1>
-		<p class="text-foreground-muted mt-0 mb-8 max-w-[58ch] text-lg">
+		<p class="mt-0 mb-8 max-w-[58ch] text-lg text-foreground-muted">
 			The page you're looking for was moved, renamed, or never existed. Try the home page or search
 			the docs.
 		</p>
 		<div class="flex flex-wrap gap-3">
 			<a
 				href="/"
-				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors"
+				class="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors hover:bg-primary-hover"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -39,7 +39,7 @@
 			</a>
 			<a
 				href="/getting-started.html"
-				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 font-semibold no-underline transition-colors"
+				class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-raised px-5 py-2.5 font-semibold text-foreground no-underline transition-colors hover:bg-surface-overlay"
 			>
 				Read the docs
 			</a>

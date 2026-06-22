@@ -102,7 +102,7 @@
 	});
 </script>
 
-{#snippet navLink(item: { slug: string; title: string }, onclick?: () => void)}
+{#snippet navLink(item: { slug: string; title: string }, onclick: (() => void) | undefined)}
 	{@const active = page.url.pathname === resolve('/[...slug].html', item)}
 	<a
 		href="/{item.slug}.html"
@@ -111,22 +111,22 @@
 		class={[
 			'block rounded-md px-4 py-2.5 no-underline transition-colors md:px-3 md:py-1.5 md:text-sm',
 			active
-				? 'text-primary bg-primary-subtle font-medium'
-				: 'text-foreground-muted hover:text-foreground hover:bg-surface-overlay',
+				? 'bg-primary-subtle font-medium text-primary'
+				: 'text-foreground-muted hover:bg-surface-overlay hover:text-foreground',
 		]}
 	>
 		{item.title}
 	</a>
 {/snippet}
 
-{#snippet navNodes(items: NavNode[], onclick?: () => void)}
+{#snippet navNodes(items: NavNode[], onclick: (() => void) | undefined)}
 	{#each items as node (node.kind === 'leaf' ? node.slug : node.prefix)}
 		{#if node.kind === 'leaf'}
 			{@render navLink(node, onclick)}
 		{:else}
 			<details class="nav-group" bind:open={openGroups[node.prefix]}>
 				<summary
-					class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 transition-colors select-none md:px-3 md:py-1.5 md:text-sm"
+					class="flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 text-foreground-muted transition-colors select-none hover:bg-surface-overlay hover:text-foreground md:px-3 md:py-1.5 md:text-sm"
 				>
 					<span class="capitalize">{node.name.replace(/-/g, ' ')}</span>
 					<svg
@@ -139,14 +139,14 @@
 						stroke-width="2.5"
 						stroke-linecap="round"
 						stroke-linejoin="round"
-						class="nav-chevron text-foreground-subtle ml-auto transition-transform"
+						class="nav-chevron ml-auto text-foreground-subtle transition-transform"
 						aria-hidden="true"
 					>
 						<polyline points="9 18 15 12 9 6" />
 					</svg>
 				</summary>
 				<div
-					class="after:bg-border-subtle relative pr-1 after:absolute after:top-0 after:right-4.5 after:bottom-0 after:w-px after:content-['']"
+					class="relative pr-1 after:absolute after:top-0 after:right-4.5 after:bottom-0 after:w-px after:bg-border-subtle after:content-['']"
 				>
 					{@render navNodes(node.children, onclick)}
 				</div>
@@ -155,14 +155,14 @@
 	{/each}
 {/snippet}
 
-{#snippet navTree(onclick?: () => void)}
+{#snippet navTree(onclick: (() => void) | undefined)}
 	{#each tree.top as item (item.slug)}
 		{@render navLink(item, onclick)}
 	{/each}
 	{#each tree.groups as group (group.prefix)}
 		<details class="nav-group mt-4" bind:open={openGroups[group.prefix]}>
 			<summary
-				class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay mb-1 flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 font-bold capitalize transition-colors select-none md:px-3 md:py-1.5 md:text-sm"
+				class="mb-1 flex cursor-pointer items-center gap-1.5 rounded-md px-4 py-2.5 font-bold text-foreground-muted capitalize transition-colors select-none hover:bg-surface-overlay hover:text-foreground md:px-3 md:py-1.5 md:text-sm"
 			>
 				{group.name.replace(/-/g, ' ')}
 				<svg
@@ -175,14 +175,14 @@
 					stroke-width="2.5"
 					stroke-linecap="round"
 					stroke-linejoin="round"
-					class="nav-chevron text-foreground-subtle ml-auto transition-transform"
+					class="nav-chevron ml-auto text-foreground-subtle transition-transform"
 					aria-hidden="true"
 				>
 					<polyline points="9 18 15 12 9 6" />
 				</svg>
 			</summary>
 			<div
-				class="after:bg-border-subtle relative pr-1 after:absolute after:top-0 after:right-4.5 after:bottom-0 after:w-px after:content-['']"
+				class="relative pr-1 after:absolute after:top-0 after:right-4.5 after:bottom-0 after:w-px after:bg-border-subtle after:content-['']"
 			>
 				{@render navNodes(group.children, onclick)}
 			</div>
@@ -193,17 +193,17 @@
 {#snippet logo()}
 	<a
 		href="/"
-		class="text-foreground inline-flex items-center gap-2 text-[0.95rem] font-semibold tracking-tight no-underline"
+		class="inline-flex items-center gap-2 text-[0.95rem] font-semibold tracking-tight text-foreground no-underline"
 	>
-		<span class="bg-primary inline-block size-5 rounded-md"></span>
-		kit<span class="text-foreground-muted font-normal">docs</span>
+		<span class="inline-block size-5 rounded-md bg-primary"></span>
+		kit<span class="font-normal text-foreground-muted">docs</span>
 	</a>
 {/snippet}
 
 {#snippet themeButton(size: 'sm' | 'lg' = 'sm')}
 	<button
 		class={[
-			'text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors',
+			'flex cursor-pointer items-center justify-center rounded-md bg-transparent text-foreground-muted transition-colors hover:bg-surface-overlay hover:text-foreground',
 			size === 'lg' ? 'h-11 w-11' : 'h-9 w-9',
 		]}
 		onclick={cycleTheme}
@@ -286,7 +286,7 @@
 	>
 		{#each visibleAnnouncements as announcement (announcement.id)}
 			<div
-				class="bg-primary-600 dark:bg-primary-800 border-b-primary-700 dark:border-b-primary-900 h-10 border-b text-white last:border-b-0"
+				class="h-10 border-b border-b-primary-700 bg-primary-600 text-white last:border-b-0 dark:border-b-primary-900 dark:bg-primary-800"
 			>
 				<div class="mx-auto flex h-full max-w-(--layout-width) items-center gap-3 px-4">
 					<p class="flex min-w-0 flex-1 items-baseline gap-1 font-medium">
@@ -301,7 +301,7 @@
 					<button
 						type="button"
 						onclick={() => dismissAnnouncement(announcement.id)}
-						class="hover:bg-primary-700 dark:hover:bg-primary-900 flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+						class="flex h-7 w-7 shrink-0 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors hover:bg-primary-700 dark:hover:bg-primary-900"
 						aria-label="Dismiss announcement"
 					>
 						<svg
@@ -327,11 +327,11 @@
 {/if}
 
 <header
-	class="bg-surface/80 border-border fixed right-0 bottom-0 left-0 z-40 border-t backdrop-blur-xl md:hidden"
+	class="fixed right-0 bottom-0 left-0 z-40 border-t border-border bg-surface/80 backdrop-blur-xl md:hidden"
 >
 	<div class="flex h-16 items-center gap-3 px-4">
 		<button
-			class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-11 w-11 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+			class="flex h-11 w-11 cursor-pointer items-center justify-center rounded-md bg-transparent text-foreground-muted transition-colors hover:bg-surface-overlay hover:text-foreground"
 			onclick={() => (sidebarOpen = !sidebarOpen)}
 			aria-label="toggle sidebar"
 		>
@@ -360,7 +360,7 @@
 		{@render logo()}
 		<div class="ml-auto flex items-center gap-1">
 			<button
-				class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-11 w-11 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+				class="flex h-11 w-11 cursor-pointer items-center justify-center rounded-md bg-transparent text-foreground-muted transition-colors hover:bg-surface-overlay hover:text-foreground"
 				onclick={() => (searchOpen = true)}
 				aria-label="search"
 			>
@@ -390,14 +390,14 @@
 >
 	<div
 		class={[
-			'border-border-subtle flex h-full w-64 shrink-0 flex-col gap-3 border-r p-4 transition-opacity duration-150',
+			'flex h-full w-64 shrink-0 flex-col gap-3 border-r border-border-subtle p-4 transition-opacity duration-150',
 			sidebarCollapsed ? 'pointer-events-none opacity-0' : 'opacity-100',
 		]}
 	>
 		<div class="flex items-center gap-2 px-1">
 			{@render logo()}
 			<button
-				class="text-foreground-muted hover:bg-surface-overlay hover:text-foreground ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-transparent transition-colors"
+				class="ml-auto flex h-8 w-8 cursor-pointer items-center justify-center rounded-md bg-transparent text-foreground-muted transition-colors hover:bg-surface-overlay hover:text-foreground"
 				onclick={() => (sidebarCollapsed = true)}
 				aria-label="collapse sidebar"
 				title="collapse sidebar"
@@ -423,7 +423,7 @@
 		<button
 			type="button"
 			onclick={() => (searchOpen = true)}
-			class="border-border bg-surface-raised text-foreground-subtle hover:bg-surface-overlay flex h-11 w-full cursor-text items-center gap-2 rounded-md border pr-2 pl-3 transition-colors md:h-9 md:text-sm"
+			class="flex h-11 w-full cursor-text items-center gap-2 rounded-md border border-border bg-surface-raised pr-2 pl-3 text-foreground-subtle transition-colors hover:bg-surface-overlay md:h-9 md:text-sm"
 		>
 			<svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -440,26 +440,26 @@
 			>
 			<span class="flex-1 text-start">Search</span>
 			<kbd
-				class="border-border bg-surface text-foreground-subtle rounded border px-1.5 py-0.5 font-mono text-[0.65rem]"
+				class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.65rem] text-foreground-subtle"
 				>{modKey} K</kbd
 			>
 		</button>
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
 			<p
-				class="text-foreground-subtle mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
+				class="mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider text-foreground-subtle uppercase"
 			>
 				Documentation
 			</p>
-			{@render navTree()}
+			{@render navTree(undefined)}
 		</nav>
 		<div
-			class="border-border bg-surface-raised text-foreground-muted flex items-center rounded-lg border p-0.5"
+			class="flex items-center rounded-lg border border-border bg-surface-raised p-0.5 text-foreground-muted"
 		>
 			<a
 				href="https://github.com/sirkostya009/kit-docs"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 items-center justify-center rounded-md transition-colors"
+				class="flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-surface-overlay hover:text-foreground"
 				aria-label="GitHub"
 			>
 				<svg
@@ -475,7 +475,7 @@
 					/>
 				</svg>
 			</a>
-			<div class="border-border ml-auto h-5 self-center border-l"></div>
+			<div class="ml-auto h-5 self-center border-l border-border"></div>
 			{@render themeButton()}
 		</div>
 	</div>
@@ -490,7 +490,7 @@
 	]}
 >
 	<button
-		class="bg-surface-raised border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border shadow-sm transition-colors"
+		class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border bg-surface-raised text-foreground-muted shadow-sm transition-colors hover:bg-surface-overlay hover:text-foreground"
 		onclick={() => (sidebarCollapsed = false)}
 		aria-label="expand sidebar"
 		title="expand sidebar"
@@ -513,7 +513,7 @@
 		</svg>
 	</button>
 	<button
-		class="bg-surface-raised border-border text-foreground-muted hover:bg-surface-overlay hover:text-foreground flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border shadow-sm transition-colors"
+		class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md border border-border bg-surface-raised text-foreground-muted shadow-sm transition-colors hover:bg-surface-overlay hover:text-foreground"
 		onclick={() => (searchOpen = true)}
 		aria-label="search"
 		title="search"
@@ -538,11 +538,11 @@
 
 {#if sidebarOpen}
 	<aside
-		class="bg-surface fixed top-(--announce-h) right-0 bottom-16 left-0 z-50 flex flex-col gap-3 overflow-y-auto p-4 md:hidden"
+		class="fixed top-(--announce-h) right-0 bottom-16 left-0 z-50 flex flex-col gap-3 overflow-y-auto bg-surface p-4 md:hidden"
 	>
 		<nav class="-mx-1 flex-1 overflow-y-auto pt-2">
 			<p
-				class="text-foreground-subtle mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider uppercase"
+				class="mt-1 mb-2 px-3 text-[0.7rem] font-semibold tracking-wider text-foreground-subtle uppercase"
 			>
 				Documentation
 			</p>

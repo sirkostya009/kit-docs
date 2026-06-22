@@ -4,7 +4,7 @@ set -e
 STAGED=$(git diff --cached --name-only --diff-filter=ACMR)
 [ -z "$STAGED" ] && exit 0
 
-ESLINT_FILES=$(echo "$STAGED" | grep -E '\.(js|ts|svelte)$' || true)
+LINT_FILES=$(echo "$STAGED" | grep -E '\.(js|ts|svelte)$' || true)
 
 # all files with unstaged changes — checks must see only committed/staged content
 DIRTY=$(git diff --name-only)
@@ -31,12 +31,12 @@ restore_wt() {
 trap restore_wt EXIT
 
 pnpm svelte-kit sync
-pnpm prettier --log-level=warn -u --write --no-error-on-unmatched-pattern --cache $STAGED
+pnpm oxfmt --no-error-on-unmatched-pattern $STAGED
 git add $STAGED
 
 PIDS=
-if [ -n "$ESLINT_FILES" ]; then
-  pnpm eslint --cache --cache-location ./node_modules/.cache/eslint/ $ESLINT_FILES &
+if [ -n "$LINT_FILES" ]; then
+  pnpm oxlint $LINT_FILES &
   PIDS="$PIDS $!"
 fi
 

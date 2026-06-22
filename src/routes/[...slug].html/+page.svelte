@@ -359,10 +359,10 @@
 	<div class="mx-auto max-w-3xl min-w-0 flex-1 px-4 py-8 md:px-8 md:py-12 lg:mx-0 lg:max-w-none">
 		{#if crumbs.length > 0}
 			<nav
-				class="text-foreground-subtle mb-4 flex flex-wrap items-center gap-2 text-sm capitalize"
+				class="mb-4 flex flex-wrap items-center gap-2 text-sm text-foreground-subtle capitalize"
 				aria-label="breadcrumb"
 			>
-				<a href="/" class="hover:text-foreground no-underline transition-colors">Docs</a>
+				<a href="/" class="no-underline transition-colors hover:text-foreground">Docs</a>
 				{#each crumbs as crumb (crumb.label)}
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -386,10 +386,10 @@
 		{#if data.headings.length > 0}
 			<details
 				bind:open={mobileTocOpen}
-				class="group border-border-subtle bg-surface-raised/80 sticky top-[calc(var(--announce-h)+(--spacing(3.25)))] z-10 mb-6 rounded-lg border backdrop-blur-xl [interpolate-size:allow-keywords] details-content:overflow-clip details-content:opacity-0 details-content:[transition:opacity_0.2s_ease,block-size_0.2s_ease,content-visibility_0.2s_allow-discrete] details-content:block-0 open:details-content:opacity-100 open:details-content:block-auto lg:hidden starting:open:details-content:opacity-0 starting:open:details-content:block-0"
+				class="group sticky top-[calc(var(--announce-h)+(--spacing(3.25)))] z-10 mb-6 rounded-lg border border-border-subtle bg-surface-raised/80 backdrop-blur-xl [interpolate-size:allow-keywords] details-content:overflow-clip details-content:opacity-0 details-content:[transition:opacity_0.2s_ease,block-size_0.2s_ease,content-visibility_0.2s_allow-discrete] details-content:block-0 open:details-content:opacity-100 open:details-content:block-auto lg:hidden starting:open:details-content:opacity-0 starting:open:details-content:block-0"
 			>
 				<summary
-					class="text-foreground hover:text-foreground flex cursor-pointer list-none items-center gap-2.5 px-4 py-2.5 font-medium select-none marker:hidden"
+					class="flex cursor-pointer list-none items-center gap-2.5 px-4 py-2.5 font-medium text-foreground select-none marker:hidden hover:text-foreground"
 				>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -397,7 +397,7 @@
 						height="16"
 						viewBox="0 0 24 24"
 						aria-hidden="true"
-						class="text-primary shrink-0"
+						class="shrink-0 text-primary"
 					>
 						<circle
 							cx="12"
@@ -434,13 +434,13 @@
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						aria-hidden="true"
-						class="text-foreground-subtle shrink-0 [transition:transform_0.15s_ease] group-open:rotate-90"
+						class="shrink-0 text-foreground-subtle [transition:transform_0.15s_ease] group-open:rotate-90"
 					>
 						<path d="m9 18 6-6-6-6" />
 					</svg>
 				</summary>
 				<ul
-					class="border-border-subtle border-t px-4 py-2 group-open:max-h-[calc(100vh-6rem)] group-open:overflow-y-auto group-open:overscroll-contain"
+					class="border-t border-border-subtle px-4 py-2 group-open:max-h-[calc(100vh-6rem)] group-open:overflow-y-auto group-open:overscroll-contain"
 				>
 					{#each data.headings as h (h.id)}
 						<li>
@@ -451,7 +451,7 @@
 								class={[
 									'block truncate py-1 no-underline transition-colors',
 									active.has(h.id)
-										? 'text-primary font-medium'
+										? 'font-medium text-primary'
 										: 'text-foreground-muted hover:text-foreground',
 									h.level === 3 ? 'pl-4' : '',
 								]}>{h.text}</a
@@ -468,7 +468,7 @@
 		</article>
 
 		{#if lastModifiedLabel}
-			<p class="text-foreground-subtle mt-12 text-xs">
+			<p class="mt-12 text-xs text-foreground-subtle">
 				Last updated on <time datetime={data.lastModified} title={lastModifiedTitle}
 					>{lastModifiedLabel}</time
 				>
@@ -477,15 +477,15 @@
 
 		{#if prev || next}
 			<nav
-				class="border-border-subtle mt-16 grid grid-cols-1 gap-3 border-t pt-8 sm:grid-cols-2"
+				class="mt-16 grid grid-cols-1 gap-3 border-t border-border-subtle pt-8 sm:grid-cols-2"
 				aria-label="page navigation"
 			>
 				{#if prev}
 					<a
 						href="/{prev.slug}.html"
-						class="group border-border bg-surface-raised hover:border-primary/40 flex flex-col rounded-lg border p-4 no-underline transition-colors"
+						class="group flex flex-col rounded-lg border border-border bg-surface-raised p-4 no-underline transition-colors hover:border-primary/40"
 					>
-						<span class="text-foreground-subtle inline-flex items-center gap-1 text-xs">
+						<span class="inline-flex items-center gap-1 text-xs text-foreground-subtle">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
 								width="12"
@@ -501,7 +501,7 @@
 							Previous
 						</span>
 						<span
-							class="text-foreground group-hover:text-primary mt-1 font-medium transition-colors"
+							class="mt-1 font-medium text-foreground transition-colors group-hover:text-primary"
 							>{prev.title}</span
 						>
 					</a>
@@ -511,9 +511,9 @@
 				{#if next}
 					<a
 						href="/{next.slug}.html"
-						class="group border-border bg-surface-raised hover:border-primary/40 flex flex-col items-end rounded-lg border p-4 text-right no-underline transition-colors"
+						class="group flex flex-col items-end rounded-lg border border-border bg-surface-raised p-4 text-right no-underline transition-colors hover:border-primary/40"
 					>
-						<span class="text-foreground-subtle inline-flex items-center gap-1 text-xs">
+						<span class="inline-flex items-center gap-1 text-xs text-foreground-subtle">
 							Next
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -529,7 +529,7 @@
 							>
 						</span>
 						<span
-							class="text-foreground group-hover:text-primary mt-1 font-medium transition-colors"
+							class="mt-1 font-medium text-foreground transition-colors group-hover:text-primary"
 							>{next.title}</span
 						>
 					</a>
@@ -544,7 +544,7 @@
 				type="button"
 				commandfor="page-actions-popover"
 				command="toggle-popover"
-				class="text-foreground-muted hover:text-foreground mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm no-underline transition-colors select-none"
+				class="mb-6 inline-flex cursor-pointer items-center gap-1.5 text-sm text-foreground-muted no-underline transition-colors select-none hover:text-foreground"
 				style="anchor-name: --page-actions-anchor;"
 			>
 				<svg
@@ -582,14 +582,14 @@
 				id="page-actions-popover"
 				popover
 				ontoggle={(e) => (popoverOpen = (e as ToggleEvent).newState === 'open')}
-				class="border-border-subtle bg-surface-raised m-0 hidden flex-col gap-0.5 rounded-md border p-1 text-sm shadow-md open:flex"
+				class="m-0 hidden flex-col gap-0.5 rounded-md border border-border-subtle bg-surface-raised p-1 text-sm shadow-md open:flex"
 				style="position-anchor: --page-actions-anchor; top: anchor(bottom); left: anchor(left); margin-top: 0.375rem;"
 			>
 				<li>
 					<a
 						href="/{params.slug}.md"
 						data-sveltekit-reload
-						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full items-center gap-2 rounded px-2 py-1.5 no-underline transition-colors"
+						class="flex w-full items-center gap-2 rounded px-2 py-1.5 text-foreground-muted no-underline transition-colors hover:bg-surface-overlay hover:text-foreground"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -613,7 +613,7 @@
 					<button
 						type="button"
 						onclick={copyMarkdown}
-						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left transition-colors"
+						class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-foreground-muted transition-colors hover:bg-surface-overlay hover:text-foreground"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -641,7 +641,7 @@
 					<button
 						type="button"
 						onclick={copyMarkdownUrl}
-						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left transition-colors"
+						class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-left text-foreground-muted transition-colors hover:bg-surface-overlay hover:text-foreground"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -665,13 +665,13 @@
 								: 'Copy markdown URL'}
 					</button>
 				</li>
-				<li role="separator" aria-hidden="true" class="border-border-subtle my-1 border-t"></li>
+				<li role="separator" aria-hidden="true" class="my-1 border-t border-border-subtle"></li>
 				<li>
 					<a
 						href={chatgptUrl}
 						target="_blank"
 						rel="noopener"
-						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full items-center gap-2 rounded px-2 py-1.5 no-underline transition-colors"
+						class="flex w-full items-center gap-2 rounded px-2 py-1.5 text-foreground-muted no-underline transition-colors hover:bg-surface-overlay hover:text-foreground"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -692,7 +692,7 @@
 						href={claudeUrl}
 						target="_blank"
 						rel="noopener"
-						class="text-foreground-muted hover:text-foreground hover:bg-surface-overlay flex w-full items-center gap-2 rounded px-2 py-1.5 no-underline transition-colors"
+						class="flex w-full items-center gap-2 rounded px-2 py-1.5 text-foreground-muted no-underline transition-colors hover:bg-surface-overlay hover:text-foreground"
 					>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -710,10 +710,10 @@
 				</li>
 			</ul>
 			{#if data.headings.length > 0}
-				<p class="text-foreground-subtle mb-3 text-[0.7rem] font-semibold tracking-wider uppercase">
+				<p class="mb-3 text-[0.7rem] font-semibold tracking-wider text-foreground-subtle uppercase">
 					On this page
 				</p>
-				<ul class="border-border-subtle border-l">
+				<ul class="border-l border-border-subtle">
 					{#each data.headings as h (h.id)}
 						<li>
 							<a
@@ -722,8 +722,8 @@
 								class={[
 									'-ml-px block truncate border-l-2 py-1 text-sm no-underline transition-colors',
 									active.has(h.id)
-										? 'border-primary text-primary font-medium'
-										: 'text-foreground-muted hover:text-foreground border-transparent',
+										? 'border-primary font-medium text-primary'
+										: 'border-transparent text-foreground-muted hover:text-foreground',
 									h.level === 3 ? 'pl-6' : 'pl-3',
 								]}>{h.text}</a
 							>

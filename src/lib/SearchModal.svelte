@@ -144,7 +144,7 @@
 		return r.matchedHeading ? `/${r.slug}.html#${r.matchedHeading.id}` : `/${r.slug}.html`;
 	}
 
-	function go(href: string, q?: string) {
+	function go(href: string, q: string | undefined) {
 		if (q !== undefined) pushRecent(q);
 		open = false;
 		goto(href);
@@ -196,7 +196,7 @@
 	onclick={onClick}
 	data-closing={closing}
 	class="
-		bg-surface-raised border-border mx-auto mt-[10vh] mb-auto w-full max-w-xl rounded-lg border p-0 shadow-2xl
+		mx-auto mt-[10vh] mb-auto w-full max-w-xl rounded-lg border border-border bg-surface-raised p-0 shadow-2xl
 		transition-[opacity,transform] duration-75 ease-out
 
 		backdrop:bg-black/30 backdrop:transition-colors backdrop:duration-75
@@ -206,7 +206,7 @@
 		starting:open:backdrop:bg-transparent
 	"
 >
-	<div class="border-border-subtle flex items-center gap-3 border-b px-4">
+	<div class="flex items-center gap-3 border-b border-border-subtle px-4">
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			width="16"
@@ -228,17 +228,17 @@
 			onkeydown={onKey}
 			type="text"
 			placeholder="Search docs..."
-			class="text-foreground placeholder:text-foreground-subtle h-12 flex-1 bg-transparent text-base outline-none"
+			class="h-12 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-foreground-subtle"
 		/>
 		<kbd
-			class="border-border bg-surface text-foreground-subtle hidden rounded border px-1.5 py-0.5 font-mono text-[0.65rem] sm:inline"
+			class="hidden rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[0.65rem] text-foreground-subtle sm:inline"
 			>Esc</kbd
 		>
 	</div>
 
 	{#if sections.length > 0 && query.trim()}
 		<div
-			class="border-border-subtle flex flex-wrap items-center gap-1.5 border-b px-4 py-2"
+			class="flex flex-wrap items-center gap-1.5 border-b border-border-subtle px-4 py-2"
 			role="tablist"
 			aria-label="Filter by section"
 		>
@@ -279,17 +279,17 @@
 
 	<div class="max-h-[60vh] overflow-y-auto p-2">
 		{#if !mini}
-			<p class="text-foreground-subtle px-3 py-6 text-center">Loading…</p>
+			<p class="px-3 py-6 text-center text-foreground-subtle">Loading…</p>
 		{:else if !query.trim()}
 			{#if recent.length > 0}
 				<div class="flex items-center justify-between px-3 pt-2 pb-1">
-					<span class="text-foreground-subtle text-xs font-medium tracking-wide uppercase"
+					<span class="text-xs font-medium tracking-wide text-foreground-subtle uppercase"
 						>Recent</span
 					>
 					<button
 						type="button"
 						onclick={clearRecent}
-						class="text-foreground-subtle hover:text-foreground text-xs underline-offset-2 hover:underline"
+						class="text-xs text-foreground-subtle underline-offset-2 hover:text-foreground hover:underline"
 						>Clear</button
 					>
 				</div>
@@ -323,7 +323,7 @@
 									stroke-width="2"
 									stroke-linecap="round"
 									stroke-linejoin="round"
-									class="text-foreground-subtle shrink-0"
+									class="shrink-0 text-foreground-subtle"
 									aria-hidden="true"
 									><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></svg
 								>
@@ -333,10 +333,10 @@
 					{/each}
 				</ul>
 			{:else}
-				<p class="text-foreground-subtle px-3 py-6 text-center">Start typing to search.</p>
+				<p class="px-3 py-6 text-center text-foreground-subtle">Start typing to search.</p>
 			{/if}
 		{:else if results.length === 0}
-			<p class="text-foreground-subtle px-3 py-6 text-center">
+			<p class="px-3 py-6 text-center text-foreground-subtle">
 				No results for &quot;{query}&quot;.
 			</p>
 		{:else}
@@ -363,21 +363,21 @@
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 								{@html highlight(r.title, query)}
 								{#if r.matchedHeading}
-									<span class="text-foreground-subtle text-xs">›</span>
-									<span class="text-foreground-muted text-xs">
+									<span class="text-xs text-foreground-subtle">›</span>
+									<span class="text-xs text-foreground-muted">
 										<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 										{@html highlight(r.matchedHeading.text, query)}
 									</span>
 								{/if}
 								{#if r.section}
 									<span
-										class="text-foreground-subtle border-border ml-auto rounded border px-1.5 py-0.5 text-[0.65rem] capitalize"
+										class="ml-auto rounded border border-border px-1.5 py-0.5 text-[0.65rem] text-foreground-subtle capitalize"
 										>{r.section.replace(/-/g, ' ')}</span
 									>
 								{/if}
 							</div>
 							{#if r.snippet}
-								<p class="text-foreground-muted mt-0.5 line-clamp-1 text-xs">
+								<p class="mt-0.5 line-clamp-1 text-xs text-foreground-muted">
 									<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 									{@html highlight(r.snippet, query)}
 								</p>
@@ -390,19 +390,19 @@
 	</div>
 
 	<div
-		class="border-border-subtle text-foreground-subtle hidden items-center gap-4 border-t px-4 py-2 text-[0.65rem] sm:flex"
+		class="hidden items-center gap-4 border-t border-border-subtle px-4 py-2 text-[0.65rem] text-foreground-subtle sm:flex"
 	>
 		<span class="flex items-center gap-1">
-			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">↵</kbd>
+			<kbd class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono">↵</kbd>
 			to open
 		</span>
 		<span class="flex items-center gap-1">
-			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">↑</kbd>
-			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">↓</kbd>
+			<kbd class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono">↑</kbd>
+			<kbd class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono">↓</kbd>
 			to navigate
 		</span>
 		<span class="flex items-center gap-1">
-			<kbd class="border-border bg-surface rounded border px-1.5 py-0.5 font-mono">Esc</kbd>
+			<kbd class="rounded border border-border bg-surface px-1.5 py-0.5 font-mono">Esc</kbd>
 			to close
 		</span>
 	</div>

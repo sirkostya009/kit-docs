@@ -62,33 +62,33 @@
 
 <article class="relative overflow-hidden px-4 py-8 md:px-12 md:py-12">
 	<div
-		class="from-primary-subtle pointer-events-none absolute inset-x-0 -top-32 -z-10 h-96 bg-linear-to-b to-transparent opacity-60"
+		class="pointer-events-none absolute inset-x-0 -top-32 -z-10 h-96 bg-linear-to-b from-primary-subtle to-transparent opacity-60"
 		aria-hidden="true"
 	></div>
 
 	<header class="max-w-3xl pt-10 pb-6 md:pt-14 md:pb-8">
 		<p
-			class="border-border-subtle bg-surface-raised text-foreground-muted mb-5 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-medium tracking-wide"
+			class="mb-5 inline-flex items-center gap-2 rounded-full border border-border-subtle bg-surface-raised px-3 py-1 text-xs font-medium tracking-wide text-foreground-muted"
 		>
-			<span aria-hidden="true" class="bg-primary inline-block size-1.5 rounded-full"></span>
+			<span aria-hidden="true" class="inline-block size-1.5 rounded-full bg-primary"></span>
 			sveltekit · markdown · static
 		</p>
 		<h1
-			class="text-foreground mt-0 mb-4 text-4xl leading-[1.1] font-bold tracking-tight md:text-5xl"
+			class="mt-0 mb-4 text-4xl leading-[1.1] font-bold tracking-tight text-foreground md:text-5xl"
 		>
 			Docs that ship as<br />
-			<span class="from-primary to-primary-400 bg-linear-to-r bg-clip-text text-transparent"
+			<span class="bg-linear-to-r from-primary to-primary-400 bg-clip-text text-transparent"
 				>static files</span
 			>
 		</h1>
-		<p class="text-foreground-muted mt-0 mb-6 max-w-[58ch] text-lg">
+		<p class="mt-0 mb-6 max-w-[58ch] text-lg text-foreground-muted">
 			Write in markdown. Get a fast, prerendered site. Every page available as both HTML and raw
 			source.
 		</p>
 		<div class="flex flex-wrap gap-3">
 			<a
 				href="/getting-started.html"
-				class="bg-primary hover:bg-primary-hover inline-flex items-center gap-1.5 rounded-md px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors"
+				class="inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 font-semibold text-white no-underline shadow-sm transition-colors hover:bg-primary-hover"
 			>
 				Get started
 				<svg
@@ -111,7 +111,7 @@
 				href="https://github.com/sirkostya009/kit-docs"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="border-border bg-surface-raised text-foreground hover:bg-surface-overlay inline-flex items-center gap-1.5 rounded-lg border px-5 py-2.5 font-semibold no-underline transition-colors"
+				class="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-raised px-5 py-2.5 font-semibold text-foreground no-underline transition-colors hover:bg-surface-overlay"
 			>
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -136,11 +136,11 @@
 				<li>
 					<a
 						href={card.href}
-						class="group border-border bg-surface-raised hover:border-primary/40 relative flex h-full flex-col gap-1.5 rounded-lg border p-4 no-underline transition-all hover:shadow-sm"
+						class="group relative flex h-full flex-col gap-1.5 rounded-lg border border-border bg-surface-raised p-4 no-underline transition-all hover:border-primary/40 hover:shadow-sm"
 					>
 						<span
 							aria-hidden="true"
-							class="bg-primary-subtle text-primary mb-1 flex size-8 items-center justify-center rounded-lg"
+							class="mb-1 flex size-8 items-center justify-center rounded-lg bg-primary-subtle text-primary"
 						>
 							{#if card.icon === 'rocket'}
 								<svg
@@ -232,7 +232,7 @@
 								>
 							{/if}
 						</span>
-						<span class="text-foreground font-semibold">{card.title}</span>
+						<span class="font-semibold text-foreground">{card.title}</span>
 						<span class="text-foreground-muted">{card.description}</span>
 					</a>
 				</li>
